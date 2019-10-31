@@ -17,3 +17,13 @@ const (
 	InvalidResponseTypeMsg string = "this response type is unsupported by this type of client"
 	NoValidRefreshTokenMsg string = "this client has no valid refresh token to this subject"
 )
+
+var InvalidRecaptchaResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_RECAPTCHA","message":"invalid recaptcha response"}]}}`)
+var InternalErrorResponse []byte = []byte(`{"status":{"errors":[{"slug":"INTERNAL_ERROR","message":"internal server error"}]}}`)
+var InvalidPayloadResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_PAYLOAD","message":"invalid payload, check the data sent in request"}]}}`)
+var UnauthorizedResponse []byte = []byte(`{"status":{"errors":[{"slug":"UNAUTHORIZED","message":"you must authenticate first"}]}}`)
+var UnauthorizedExchangeResponse []byte = []byte(`{"status":{"errors":[{"slug":"UNAUTHORIZED_CODE","message":"your code is invalid, request the resource owner again for grant"}]}}`)
+var InvalidExchangeResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_EXCHANGE","message":"your exchange request is invalid, something is wrong with your request parameters"}]}}`)
+var InvalidActivationResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_ACTIVATION","message":"invalid activation request"}]}}`)
+var InvalidRefreshResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_REFRESH","message":"invalid refresh token request"}]}}`)
+var OkResponse []byte = []byte(`{"status":{"errors":[]}}`)
