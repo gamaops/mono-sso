@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package sso.service;
+
+import "sso-common/sso-common.proto";
+
+enum ActivationMethod {
+	NONE = 0;
+	EMAIL = 1;
+	SMS = 2;
+	GOOGLE_AUTHENTICATOR = 3; // Future
+	WEBHOOK = 4; // Future
+	WHATSAPP = 5; // Future, advise about this method being insecure
+}
+
+message AccountProfile {
+	string name = 1;
+}
+
+message SessionSubject {
+	int64 authenticated_at = 1;
+	int64 activated_at = 2;
+	int64 expires_at = 3;
+}
+
+message SignInRequest {
+	string identifier = 1;
+	string password = 2;
+	string user_agent = 3;
+	string source_ip = 4;
+	string client_ip = 5;
+	repeated string forwarded_ips = 6;
+	string session_id = 7;
+	string activation_code_duration = 8;
+}
+
+message SignInResponse {
+	sso.common.ResponseStatus status = 1;
+	ActivationMethod activation_method = 2;
+	string subject = 3;
+	AccountProfile profile = 4;
+}
+
+message ActivateSessionRequest {
+	string activation_code = 1;
+	string subject = 2;
+	string user_agent = 3;
+	string session_id = 4;
+}
+
+message ActivateSessionResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+enum EventLevel {
+	INFO = 0;
+	WARNING = 1;
+}
+
+message RegisterEventRequest {
+	EventLevel level = 1;
+	bool is_sensitive = 2;
+	string message = 3;
+	map<string, string> data = 4;
+}
+
+message RegisterEventResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+service AccountService {
+	rpc SignIn(SignInRequest) returns (SignInResponse);
+	rpc ActivateSession(ActivateSessionRequest) returns (ActivateSessionResponse);
+	rpc RegisterEvent(RegisterEventRequest) returns (RegisterEventResponse);
+}
+
+message AuthorizeClientRequest {
+	string subject = 1;
+	string client_id = 2;
+	string response_type = 3;
+	string redirect_uri = 4;
+	repeated string scopes = 5;
+	string state = 6;
+}
+
+message AuthorizeClientResponse {
+	sso.common.ResponseStatus status = 1;
+	repeated string unauthorized_scopes = 2;
+	string client_name = 3;
+}
+
+message GrantScopesRequest {
+	string client_id = 1;
+	string subject = 2;
+	repeated string scopes = 3;
+}
+
+message GrantScopesResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+message NewRefreshTokenRequest {
+	string client_id = 1;
+	string subject = 2;
+	string session_id = 3;
+	string authorization_code = 4;
+	string duration = 5;
+	bool force_new = 6;
+	string client_secret = 7;
+	string redirect_uri = 8;
+	repeated string scopes = 9;
+}
+
+message NewRefreshTokenResponse {
+	sso.common.ResponseStatus status = 1;
+	string refresh_token_id = 2;
+	int64 expires_at = 3;
+}
+
+service AuthorizationService {
+	rpc AuthorizeClient(AuthorizeClientRequest) returns (AuthorizeClientResponse);
+	rpc GrantScopes(GrantScopesRequest) returns (GrantScopesResponse);
+	rpc NewRefreshToken(NewRefreshTokenRequest) returns (NewRefreshTokenResponse);
+	// TODO: Method to use refresh token
+}

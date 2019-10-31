@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sso.manager;
+
+import "sso-common/sso-common.proto";
+
+enum ClientType {
+	PUBLIC = 0;
+	CONFIDENTIAL = 1;
+}
+
+message CreateClientRequest {
+	ClientType type = 1;
+	repeated string redirect_uris = 2;
+	string name = 3;
+}
+
+message CreateClientResponse {
+	sso.common.ResponseStatus status = 1;
+	string client_id = 2;
+	string client_secret = 3;
+}
+
+message CreateScopeRequest {
+	string client_id = 1;
+	string scope = 2;
+	string description = 3;
+}
+
+message CreateScopeResponse {
+	sso.common.ResponseStatus status = 1;
+	string scope_id = 2;
+}
+
+service ClientService {
+	rpc CreateClient(CreateClientRequest) returns (CreateClientResponse);
+	rpc CreateScope(CreateScopeRequest) returns (CreateScopeResponse);
+}
