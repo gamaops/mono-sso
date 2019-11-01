@@ -1,0 +1,317 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+
+	<title>SSO</title>
+	{{ if ne (len .Scopes) 0 }}
+	<meta name="oauth2:scopes" content="{{ .Scopes }}">
+	{{ end }}
+	{{ if ne (len .ClientName) 0 }}
+	<meta name="oauth2:client" content="{{ .ClientName }}">
+	{{ end }}
+	{{ if ne (len .GrantNonce) 0 }}
+	<meta name="oauth2:grant_nonce" content="{{ .GrantNonce }}">
+	{{ end }}
+	{{ if .RequireSignIn }}
+	<meta name="oauth2:require_sign_in" content="true">
+	{{ else }}
+	<meta name="oauth2:require_sign_in" content="false">
+	{{ end }}
+	<meta name="description" content="SSO">
+	<meta name="author" content="GamaOps">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+
+<body>
+	<script>
+
+
+		function getUrlParameter(name) {
+			name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+			var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+			var results = regex.exec(location.search);
+			return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+		};
+
+		function onGrantScopes() {
+			var nonce = $('meta[name="oauth2:grant_nonce"]').attr('content');
+			var subject = getCookie('SSO_SUB');
+			$.ajax({
+				url: '/sign-in/authorize',
+				type: 'post',
+				dataType: 'json',
+				contentType: 'application/json',
+				error: function (jqXHR,textStatus,errorThrown) {
+					putError(jqXHR.responseJSON);
+				},
+				success: function (data) {
+					resetError();
+
+					// Reload so server can generate authorization code/tokens usign the granted session
+					window.location.reload();
+
+				},
+				data: JSON.stringify({
+					nonce,
+					subject,
+					granted: true
+				})
+			});
+			
+		}
+
+		function onDenyScopes() {
+			var redirectUri = getUrlParameter('redirect_uri')
+			var state = getUrlParameter('state')
+			window.location.replace(redirectUri+`#state=${state}&error=access_denied&details=resource owner denied scopes grant`);
+		}
+
+		function showGrantScreen() {
+			var elGrantNonce = $('meta[name="oauth2:grant_nonce"]');
+			if (elGrantNonce.length === 0) {
+				return
+			}
+			$("#grant").show();
+			var requireSignIn = $('meta[name="oauth2:require_sign_in"]').attr('content') === 'true';
+			var clientName = $('meta[name="oauth2:client"]').attr('content');
+			var scopes = $('meta[name="oauth2:scopes"]').attr('content');
+			
+			if (requireSignIn) {
+				$("#signin-helper").html(`You must sign in before granting scopes to: ${clientName}`);
+				return
+			}
+
+			$("#grant-app").html(clientName);
+			$("#grant-scopes").html(scopes);
+		}
+
+		function loadAccountSwitch() {
+			var accountSwitch = $("#account-switch");
+			accountSwitch.html('');
+			var cookies = getCookiesByRegexp(/^SUBSESS_.*/);
+			var currentSubject = getCookie('SSO_SUB');
+			var currentSession = null;
+			for (var key in cookies) {
+				cookie = cookies[key];
+				var session = JSON.parse(window.atob(cookie));
+				var subject = key.substring('SUBSESS_'.length)
+				accountSwitch.append(`<p><b>Account: ${session.name} (activated: ${session.activated})</b> <button onclick="onSwitchAccount('${subject}')">Switch To</button> <button onclick="onSignOut('${subject}')">Sign Out</button></p>`);
+			}
+			if (currentSubject === null) {
+				return;
+			}
+			var currentSession = getCookie('SUBSESS_'+currentSubject);
+			if (currentSession === null) {
+				return;
+			}
+			currentSession = JSON.parse(window.atob(currentSession));
+
+			accountSwitch.prepend(`<h2>Current Session: ${currentSession.name}</h2>`);
+
+		}
+
+		function onSignOut(subject) {
+
+			var cookies = getCookiesByRegexp(/^SUBSESS_.*/);
+			var currentSubject = getCookie('SSO_SUB');
+			var subjectKey = 'SUBSESS_'+subject;
+
+			if (subjectKey in cookies) {
+				eraseCookie(subjectKey);
+				delete cookies[subjectKey]
+			}
+
+			if (currentSubject === subject) {
+				if (Object.keys(cookies).length === 0) {
+					eraseCookie('SSO_SUB');
+					loadAccountSwitch();
+					return;
+				}
+				for (var key in cookies) {
+					subject = key.substring('SUBSESS_'.length);
+					setCookie('SSO_SUB', subject)
+					break;
+				}
+			}
+
+			loadAccountSwitch();
+			
+		}
+
+		function onSwitchAccount(subject) {
+			setCookie("SSO_SUB", subject);
+			window.location.reload();
+		}
+		$(document).ready(function () {
+			loadAccountSwitch();
+			showGrantScreen();
+		});
+
+		function setCookie(name,value,expiresAt) {
+			var expires = "";
+			if (expiresAt) {
+				var date = new Date(expiresAt*1000);
+				expires = "; expires=" + date.toUTCString();
+			}
+			document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		}
+		function getCookie(name) {
+			var nameEQ = name + "=";
+			var ca = document.cookie.split(';');
+			for (var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+			}
+			return null;
+		}
+
+		function getCookiesByRegexp(regexp) {
+			var cookies = {};
+			var ca = document.cookie.split(';');
+			for (var i=0;i < ca.length;i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1,c.length);
+				var [nameEQ] = c.split('=')
+				if (regexp.test(nameEQ)) 
+					cookies[nameEQ] = c.substring(nameEQ.length+1,c.length);
+			}
+			return cookies;
+		}
+
+		function eraseCookie(name) {   
+			document.cookie = name+'=; Max-Age=-99999999;';  
+		}
+		function putError(error) {
+			$("#error").html(JSON.stringify(error, null, '  '));
+		}
+		function resetError() {
+			$("#error").html('');
+		}
+		function onSubmitSignIn(token) {
+			var data = $("#signin-form").serializeArray();
+			var payload = {};
+			for (item of data) {
+				if (item.name !== 'g-recaptcha-response') {
+					payload[item.name] = item.value;
+					continue;
+				}
+				payload.recaptcha_response = item.value
+			}
+			$.ajax({
+				url: '/sign-in/authenticate',
+				type: 'post',
+				dataType: 'json',
+				contentType: 'application/json',
+				error: function (jqXHR,textStatus,errorThrown) {
+					putError(jqXHR.responseJSON);
+				},
+				success: function (data) {
+					resetError();
+					// Stores subject cookie with the name and set expiration from response
+					// If activation_method == 0 we're already authenticated otherwise we need to go to mfa flow
+
+					var currentSession = getCookie("SUBSESS_"+data.subject);
+
+					if (currentSession !== null) {
+						currentSession = JSON.parse(window.atob(currentSession));
+					} else {
+						currentSession = {name: data.name, activated: false}
+					}
+
+					if (data.activation_method === 0) {
+						currentSession.activated = true;
+					}
+
+					if (!currentSession.activated) {
+						$("#signin").hide()
+						$("#activate [name='subject']").val(data.subject);
+						// Only for demonstration purpose, we shouldn't put the challenge on DOM, instead store only in-memory
+						$("#activate [name='challenge']").val(data.challenge);
+						$("#activate").show();
+					}
+
+					setCookie("SUBSESS_"+data.subject, window.btoa(JSON.stringify(currentSession)), data.expiration);
+					if (currentSession.activated) {
+						window.location.reload();
+						return;
+					}
+					loadAccountSwitch();
+
+				},
+				data: JSON.stringify(payload)
+			});
+		}
+
+		function onSubmitActivation() {
+			var data = $("#activate-form").serializeArray();
+			var payload = {};
+			for (item of data) {
+				payload[item.name] = item.value;
+			}
+			$.ajax({
+				url: '/sign-in/activate',
+				type: 'post',
+				dataType: 'json',
+				contentType: 'application/json',
+				error: function (jqXHR,textStatus,errorThrown) {
+					putError(jqXHR.responseJSON);
+				},
+				success: function (data) {
+					resetError();
+
+					var subject = $("#activate-form [name='subject']").val();
+
+					var currentSession = JSON.parse(window.atob(getCookie("SUBSESS_"+subject)));
+
+					currentSession.activated = true;
+
+					$("#activate").hide();
+					
+					setCookie("SUBSESS_"+subject, window.btoa(JSON.stringify(currentSession)), data.expiration);
+					setCookie("SSO_SUB", subject);
+					window.location.reload();
+
+				},
+				data: JSON.stringify(payload)
+			});
+		}
+	</script>
+	<div id="error">
+	</div>
+	<div id="account-switch">
+	</div>
+	<div id="signin">
+		<form id="signin-form">
+			<h3>SignIn</h3>
+			<p id="signin-helper"></p>
+			<input type="text" name="identifier" placeholder="Identifier" /><br>
+			<input type="password" name="password" placeholder="Password" /><br>
+			<button class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+				data-callback="onSubmitSignIn">Submit</button>
+		</form>
+	</div>
+	</div>
+	<div id="activate" style="display:none">
+		<form id="activate-form">
+			<h3>Activate Session (MFA)</h3>
+			<input type="text" name="activation_code" placeholder="Code" /><br>
+			<input type="hidden" name="subject" />
+			<input type="hidden" name="challenge" />
+			<button onclick="onSubmitActivation()" type="button">Submit</button>
+		</form>
+	</div>
+	<div id="grant" style="display:none">
+			<h3>Grant Scopes To App: <span id="grant-app"></span></h3>
+			<p>This app is requiring the following scopes: <span id="grant-scopes"></span></p>
+			<button onclick="onGrantScopes()" type="button">Grant</button>
+			<button onclick="onDenyScopes()" type="button">Deny</button>
+	</div>
+</body>
+
+</html>

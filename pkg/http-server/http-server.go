@@ -3,34 +3,35 @@ package httpserver
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
-	"sync"
 
 	"time"
 
+	"github.com/gamaops/mono-sso/pkg/constants"
 	"github.com/sirupsen/logrus"
 )
 
 type Options struct {
-	HttpBind        string
+	HTTPBind        string
 	PrivateKeyPath  string
 	CertificatePath string
 	ShutdownTimeout time.Duration
+	RequestDeadline time.Duration
 }
 
 type HTTPServer struct {
-	Options      *Options
-	Server       *http.Server
-	WaitShutdown sync.WaitGroup
-	Logger       *logrus.Logger
+	Options *Options
+	Server  *http.Server
+	Logger  *logrus.Logger
 }
 
 func StartServer(httpServer *HTTPServer) {
-	httpServer.WaitShutdown = sync.WaitGroup{}
 	httpServer.Server = &http.Server{
-		Addr:              httpServer.Options.HttpBind,
+		Addr:              httpServer.Options.HTTPBind,
 		ReadTimeout:       5 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 		WriteTimeout:      5 * time.Second,
@@ -57,8 +58,6 @@ func StartServer(httpServer *HTTPServer) {
 			httpServer.Logger.Fatalf("Error starting server: %v", err)
 		}
 	}()
-
-	httpServer.WaitShutdown.Add(1)
 
 }
 
@@ -100,5 +99,23 @@ func StopServer(httpServer *HTTPServer) {
 	if err := httpServer.Server.Shutdown(ctx); err != nil {
 		httpServer.Logger.Errorf("Error while stopping server: %v", err)
 	}
-	httpServer.WaitShutdown.Done()
+}
+
+func ReadJSONRequestBody(payloadType interface{}, httpServer *HTTPServer, w http.ResponseWriter, r *http.Request) bool {
+	pld, err := ioutil.ReadAll(r.Body)
+	w.Header().Set("Content-Type", "application/json")
+	if err != nil {
+		httpServer.Logger.Errorf("Error while decoding authentication request: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(constants.InternalErrorResponse)
+		return false
+	}
+	err = json.Unmarshal(pld, payloadType)
+	if err != nil {
+		httpServer.Logger.Warnf("Invalid payload for authentication request: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(constants.InvalidPayloadResponse)
+		return false
+	}
+	return true
 }

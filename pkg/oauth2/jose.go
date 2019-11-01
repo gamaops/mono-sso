@@ -13,7 +13,6 @@ import (
 	"io/ioutil"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	jose "github.com/square/go-jose/v3"
 	"github.com/square/go-jose/v3/jwt"
 )
@@ -58,7 +57,7 @@ func SetupOAuth2Jose(oauth2jose *OAuth2Jose) error {
 		fingerprint := sha1.Sum(privateKeyBytes)
 		oauth2jose.Fingerprint = hex.EncodeToString(fingerprint[:])
 		oauth2jose.RSAKey = privateKey
-		return nil
+		return setupJWK(oauth2jose)
 	}
 
 	privatePem, _ := pem.Decode(privateKeyContent)
@@ -67,7 +66,7 @@ func SetupOAuth2Jose(oauth2jose *OAuth2Jose) error {
 		return ErrInvalidKeyType
 	}
 
-	privatePemPassword := []byte(viper.GetString("privateKeyPassword"))
+	privatePemPassword := []byte(oauth2jose.Options.PrivateKeyPassword)
 
 	if len(privatePemPassword) > 0 {
 		privatePemBytes, err = x509.DecryptPEMBlock(privatePem, privatePemPassword)

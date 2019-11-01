@@ -16,7 +16,7 @@ import (
 )
 
 type AuthorizationServer struct {
-	sso.UnimplementedAccountServiceServer
+	sso.UnimplementedAuthorizationServiceServer
 }
 
 func (s *AuthorizationServer) AuthorizeClient(ctx context.Context, req *sso.AuthorizeClientRequest) (*sso.AuthorizeClientResponse, error) {

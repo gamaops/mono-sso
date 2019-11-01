@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 var ErrInvalidIDPart = errors.New("invalid cache key ID part, must be string, []byte or rune")
@@ -86,4 +87,25 @@ func StopCacheClient(cache *Cache) {
 
 	cache.Logger.Warn("Redis client closed")
 
+}
+
+func SetupViper() {
+	viper.SetDefault("redisPrefix", "sso")
+	viper.BindEnv("redisPrefix", "SSO_REDIS_PREFIX")
+	viper.SetDefault("redisSentinel", "false")
+	viper.BindEnv("redisSentinel", "SSO_REDIS_SENTINEL")
+	viper.SetDefault("redisNodes", "")
+	viper.BindEnv("redisNodes", "SSO_REDIS_NODES")
+	viper.SetDefault("redisPassword", "")
+	viper.BindEnv("redisPassword", "SSO_REDIS_PASSWORD")
+	viper.SetDefault("redisDb", "0")
+	viper.BindEnv("redisDb", "SSO_REDIS_DB")
+	viper.SetDefault("redisMaster", "")
+	viper.BindEnv("redisMaster", "SSO_REDIS_MASTER")
+	viper.SetDefault("redisMaxPoolSize", "5")
+	viper.BindEnv("redisMaxPoolSize", "SSO_REDIS_MAX_POOL_SIZE")
+	viper.SetDefault("redisMinPoolSize", "1")
+	viper.BindEnv("redisMinPoolSize", "SSO_REDIS_MIN_POOL_SIZE")
+	viper.SetDefault("redisNode", "127.0.0.1:6379")
+	viper.BindEnv("redisNode", "SSO_REDIS_NODE")
 }
