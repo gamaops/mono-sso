@@ -7,6 +7,7 @@ const (
 	InvalidClientSlg       string = "INVALID_CLIENT"
 	InvalidResponseTypeSlg string = "INVALID_RESPONSE_TYPE"
 	NoValidRefreshTokenSlg string = "NO_VALID_REFRESH_TOKEN"
+	InternalErrorSlg       string = "INTERNAL_ERROR"
 )
 
 const (
@@ -16,6 +17,7 @@ const (
 	InvalidClientMsg       string = "invalid client id or redirect uri"
 	InvalidResponseTypeMsg string = "this response type is unsupported by this type of client"
 	NoValidRefreshTokenMsg string = "this client has no valid refresh token to this subject"
+	InternalErrorMsg       string = "internal server error"
 )
 
 var InvalidRecaptchaResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_RECAPTCHA","message":"invalid recaptcha response"}]}}`)

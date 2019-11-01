@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "github.com/gamaops/mono-sso/pkg/idl/sso-manager";
+
 package sso.manager;
 
 import "sso-common/sso-common.proto";

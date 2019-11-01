@@ -61,7 +61,6 @@ func StartDatastore(ctx context.Context, datastore *Datastore) error {
 
 func ensureIndexes(ctx context.Context, datastore *Datastore) error {
 	datastore.Logger.Info("Ensuring MongoDB indexes")
-	var err error = nil
 
 	optsID := options.Index().SetName("unq_identifier").SetUnique(true)
 
@@ -72,10 +71,7 @@ func ensureIndexes(ctx context.Context, datastore *Datastore) error {
 		},
 	}
 
-	_, err = datastore.Collections.Accounts.Indexes().CreateMany(ctx, idxs)
-	if err != nil {
-		return err
-	}
+	datastore.Collections.Accounts.Indexes().CreateMany(ctx, idxs)
 
 	optsID = options.Index().SetName("unq_scopes").SetUnique(true)
 
@@ -86,10 +82,7 @@ func ensureIndexes(ctx context.Context, datastore *Datastore) error {
 		},
 	}
 
-	_, err = datastore.Collections.Scopes.Indexes().CreateMany(ctx, idxs)
-	if err != nil {
-		return err
-	}
+	datastore.Collections.Scopes.Indexes().CreateMany(ctx, idxs)
 
 	optsID = options.Index().SetName("unq_grants").SetUnique(true)
 
@@ -100,10 +93,7 @@ func ensureIndexes(ctx context.Context, datastore *Datastore) error {
 		},
 	}
 
-	_, err = datastore.Collections.Grants.Indexes().CreateMany(ctx, idxs)
-	if err != nil {
-		return err
-	}
+	datastore.Collections.Grants.Indexes().CreateMany(ctx, idxs)
 
 	optsID = options.Index().SetName("unq_refresh_tokens").SetUnique(true).SetPartialFilterExpression(bson.M{
 		"type": bson.M{
@@ -121,10 +111,7 @@ func ensureIndexes(ctx context.Context, datastore *Datastore) error {
 		},
 	}
 
-	_, err = datastore.Collections.Tokens.Indexes().CreateMany(ctx, idxs)
-	if err != nil {
-		return err
-	}
+	datastore.Collections.Tokens.Indexes().CreateMany(ctx, idxs)
 
 	return nil
 }

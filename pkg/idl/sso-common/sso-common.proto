@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package sso.common;
 
+option go_package = "github.com/gamaops/mono-sso/pkg/idl/sso-common";
+
 message ResponseStatus {
 	message Error {
 		string slug = 1;
