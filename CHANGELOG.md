@@ -1,3 +1,12 @@
+## 2019-11-01T20:06:22.191Z
+### 🆕 - add code or file(s) (project)
+
+#### none
+
+- Add CORS
+
+-----------------------------
+
 ## 2019-11-01T19:57:32.326Z
 ### 🆕 - add code or file(s) (project)
 
