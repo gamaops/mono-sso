@@ -13,6 +13,7 @@ import (
 	"github.com/gamaops/mono-sso/pkg/session"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	logrus "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
@@ -65,6 +66,10 @@ func setup() {
 	viper.BindEnv("httpsPrivateKey", "SSO_HTTPS_PRIVATE_KEY")
 	viper.SetDefault("httpsCertificate", "")
 	viper.BindEnv("httpsCertificate", "SSO_HTTPS_CERTIFICATE")
+
+	// CORS
+	viper.SetDefault("allowedOrigins", "https://localhost:3230")
+	viper.BindEnv("allowedOrigins", "SSO_ALLOWED_ORIGINS")
 
 	// SSO Service gRPC server address
 	viper.SetDefault("grpcServerAddr", "127.0.0.1:3231")
@@ -243,7 +248,14 @@ func setup() {
 		)
 	})
 
-	http.Handle("/", Router)
+	httpCors := cors.New(cors.Options{
+		AllowedOrigins:   viper.GetStringSlice("allowedOrigins"),
+		AllowCredentials: true,
+		AllowedMethods:   []string{"POST", "GET"},
+		Debug:            false,
+	})
+
+	http.Handle("/", httpCors.Handler(Router))
 
 	httpserver.StartServer(ServiceHTTPServer)
 
