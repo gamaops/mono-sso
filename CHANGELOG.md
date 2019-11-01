@@ -1,3 +1,12 @@
+## 2019-11-01T19:57:32.326Z
+### 🆕 - add code or file(s) (project)
+
+#### none
+
+- Finish SSO refactor
+
+-----------------------------
+
 ## 2019-11-01T03:17:54.758Z
 ### 🆕 - add code or file(s) (project)
 
