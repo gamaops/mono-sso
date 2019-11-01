@@ -1,3 +1,12 @@
+## 2019-11-01T20:43:50.067Z
+### 📝 - writing docs (project)
+
+#### none
+
+- Add README and environment vars configurations for SSO Provider
+
+-----------------------------
+
 ## 2019-11-01T20:06:22.191Z
 ### 🆕 - add code or file(s) (project)
 
