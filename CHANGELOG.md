@@ -1,3 +1,12 @@
+## 2019-11-01T03:17:54.758Z
+### 🆕 - add code or file(s) (project)
+
+#### none
+
+- Finish sso-service refactor
+
+-----------------------------
+
 ## 2019-10-31T22:52:48.212Z
 ### 🆕 - add code or file(s) (project)
 
