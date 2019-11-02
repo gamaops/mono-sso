@@ -38,7 +38,7 @@ func setup() {
 	viper.SetDefault("grpcListen", "0.0.0.0:3231")
 	viper.BindEnv("grpcListen", "SSO_GRPC_LISTEN")
 	viper.SetDefault("grpcMaxKeepAlive", "2m")
-	viper.BindEnv("grpcListen", "SSO_GRPC_LISTEN")
+	viper.BindEnv("grpcMaxKeepAlive", "SSO_GRPC_KEEP_ALIVE")
 
 	// Redis information
 	cache.SetupViper()

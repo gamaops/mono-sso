@@ -11,3 +11,7 @@ message ResponseStatus {
 	}
 	repeated Error errors = 1;
 }
+
+message RequestSession {
+	string access_token = 1;
+}

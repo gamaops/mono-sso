@@ -1,0 +1,584 @@
+{
+	"info": {
+		"_postman_id": "99be1250-efd3-45b2-9669-c9fb7eda9cc6",
+		"name": "Mono SSO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authorization Code Flow",
+			"item": [
+				{
+					"name": "Authorization Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in?client_id=5db55e50dc97d50006acddef&response_type=code&redirect_uri=https://localhost:3230/sign-in&scopes=profile:write profile:delete&state=helloworld\n",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "5db55e50dc97d50006acddef"
+								},
+								{
+									"key": "response_type",
+									"value": "code"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://localhost:3230/sign-in"
+								},
+								{
+									"key": "scopes",
+									"value": "profile:write profile:delete"
+								},
+								{
+									"key": "state",
+									"value": "helloworld\n"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Exchange Authorization Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "5db55e50dc97d50006acddef",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://localhost:3230/sign-in",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "208413cdf4a625a564de1fc5ca471406e6f5a7da",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in/exchange",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in",
+								"exchange"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "5db55e50dc97d50006acddef",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "123456",
+											"type": "text"
+										},
+										{
+											"key": "grant_type",
+											"value": "authorization_code",
+											"type": "text"
+										},
+										{
+											"key": "redirect_uri",
+											"value": "https://localhost:3230/sign-in",
+											"type": "text"
+										},
+										{
+											"key": "code",
+											"value": "208413cdf4a625a564de1fc5ca471406e6f5a7da",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://localhost:3230/sign-in/exchange",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "3230",
+									"path": [
+										"sign-in",
+										"exchange"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 01 Nov 2019 19:55:14 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1ZGI1NWU1MGRjOTdkNTAwMDZhY2RkZWYiLCJleHAiOjE1NzI2Mzg0MTQsImlhdCI6MTU3MjYzODExNCwiaXNzIjoiYWNjb3VudHMuc2F2ZXNhZmUuYXBwIiwia2lkIjoiY2E4YTFjODhhN2M2NTU3NjBmNmI4NmQxODJkYzBjNWY1OTJlYzE1MSIsIm5iZiI6MTU3MjYzODExNCwic2NvcGUiOiJwcm9maWxlOndyaXRlIHByb2ZpbGU6ZGVsZXRlIiwic3ViIjoiNWRhZjZkZThkYzk3ZDUwMDA2YWNkZGViIn0.igUR09SUr8hDzEs0ff6k8ionDJoeXaC-1cZW_AHkEjTT6nnMr3GHUNSMOpEpIz94ceu2IYx8JiLLcYkprIWwJzsaNJeuNoDNfLbXUBMZJSkVHeBLmNjjQtzYG1myGvxsVKrk8Ctafm4l8cGxpnDOeEC7hGpTuccl4FsEPhWYIwQrS0thQl3-YYQoDRNKeP5h1lFnlKjcEDgKkmoYvO5j020NidNzxjxdhxPEwtYHs9uQQcirQpICWzwczwhM_cBMSZtKURkOiwY6xJvLkiG6ajeOoqbCU6rB5gitwizQSPEzIcYoUSMNbMKHcEW6q0UOa_kYdU-NRWQtefOuR8DoseJBWrtnpDR2pttd_OJY3t8P44_W83Y0mwbbXWt-SzVPEAF-Uu7Mz78Fsq5JhVyOrWc759aIqbpERXS3vPSzlZJy9QQGzI04mrdvEVyOfixk6EvrKK8FmMJjsB4Ctrj1zjAKfXZ2gBg2SXpji_52iPFRYT9CzPXsMH4ZOXzmdyt4KWvCxMHqxP372p5g5G9RROBptPgXYQiHPMfWeAJ5lEsmJrpFvkPWfPGOPFvtvWzAN80_X7s3F5eUme8eJJQ6z5BG7X4kkkU_Ald2HFPwvrlishJ5exmdR5ywpoAqdTsGmgOPd9HcBntQbdWJLsu5yTbh_jPduNNWoQOehbLgTXM\",\n    \"refresh_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1ZGI1NWU1MGRjOTdkNTAwMDZhY2RkZWYiLCJleHAiOjE1NzI2NDE3MTQsImlhdCI6MTU3MjYzODExNCwiaXNzIjoiYWNjb3VudHMuc2F2ZXNhZmUuYXBwIiwianRpIjoiNWRiYzhkYTJhODIwYTIzMTgzMDcwYzA5Iiwia2lkIjoiY2E4YTFjODhhN2M2NTU3NjBmNmI4NmQxODJkYzBjNWY1OTJlYzE1MSIsIm5iZiI6MTU3MjYzODExNCwic2NvcGUiOiJwcm9maWxlOndyaXRlIHByb2ZpbGU6ZGVsZXRlIiwic3ViIjoiNWRhZjZkZThkYzk3ZDUwMDA2YWNkZGViIn0.vxNuUVFUnsiOugvOlvO6zcsOy3L7pcXIIuNVjw807WShXT21YUFW6OzzyYnIlkcuakT6aERSGNMqTcKrMrkz7jzqqvKMoXT0Ck89TuXwUT3lMo2D2RU48wgQNXnWEIRF0UeSC3Rsc2R-PRZUJhbnda7HlYkEBVAIbbCiByiML3DSHJOyu7pd1eqGPU6_EnV5ZhR2scFRPx0Rlk1XatKGtevsSC5AscO5Rt4cyFwO-CJfJ9ZFYS6GBegiYsmPYSWamRc-1orkedn2o_BEEDuI9A6rz0j35n4XoAIb8xWBpkD6ZA9dPbWpiin-IiLt78IHAV1y-yHnOuQgvaM0fp_2cE4aQa7B8vseaQQEYzacJpTv1fBBD2UC6BFkGHkxTetOzMhQcPrFD--19eWc7bkpuWnAFdctZGf4qvzGQXnx3aRcvMf2_K78XUyxViTGy36jI8MIrMD9Oqh73oBAwodT7CZjZESzu8O2HuPgiAQ9nKJudoqB9Go6QEbIoI_Lfz5D4_RS2hwTTEja1wQXnXV3sg7ooMpCcTz58G0xg2ZisLsh9jNdnlabPxQ9XyhbdE616hE1mutt4LXmMTsk7JtSIsrPDDa9CVmToUZBzEnGSoG68uBHd9twm9K-ul9hCGneZzXdfHFbXeNUP6J1mvZCemWReMYAnPJ7NbsLfXLrga0\",\n    \"expires_in\": 300,\n    \"token_type\": \"refresh_token\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Use Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "5db55e50dc97d50006acddef",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1ZGI1NWU1MGRjOTdkNTAwMDZhY2RkZWYiLCJleHAiOjE1NzI2NDE3MTQsImlhdCI6MTU3MjYzODExNCwiaXNzIjoiYWNjb3VudHMuc2F2ZXNhZmUuYXBwIiwianRpIjoiNWRiYzhkYTJhODIwYTIzMTgzMDcwYzA5Iiwia2lkIjoiY2E4YTFjODhhN2M2NTU3NjBmNmI4NmQxODJkYzBjNWY1OTJlYzE1MSIsIm5iZiI6MTU3MjYzODExNCwic2NvcGUiOiJwcm9maWxlOndyaXRlIHByb2ZpbGU6ZGVsZXRlIiwic3ViIjoiNWRhZjZkZThkYzk3ZDUwMDA2YWNkZGViIn0.vxNuUVFUnsiOugvOlvO6zcsOy3L7pcXIIuNVjw807WShXT21YUFW6OzzyYnIlkcuakT6aERSGNMqTcKrMrkz7jzqqvKMoXT0Ck89TuXwUT3lMo2D2RU48wgQNXnWEIRF0UeSC3Rsc2R-PRZUJhbnda7HlYkEBVAIbbCiByiML3DSHJOyu7pd1eqGPU6_EnV5ZhR2scFRPx0Rlk1XatKGtevsSC5AscO5Rt4cyFwO-CJfJ9ZFYS6GBegiYsmPYSWamRc-1orkedn2o_BEEDuI9A6rz0j35n4XoAIb8xWBpkD6ZA9dPbWpiin-IiLt78IHAV1y-yHnOuQgvaM0fp_2cE4aQa7B8vseaQQEYzacJpTv1fBBD2UC6BFkGHkxTetOzMhQcPrFD--19eWc7bkpuWnAFdctZGf4qvzGQXnx3aRcvMf2_K78XUyxViTGy36jI8MIrMD9Oqh73oBAwodT7CZjZESzu8O2HuPgiAQ9nKJudoqB9Go6QEbIoI_Lfz5D4_RS2hwTTEja1wQXnXV3sg7ooMpCcTz58G0xg2ZisLsh9jNdnlabPxQ9XyhbdE616hE1mutt4LXmMTsk7JtSIsrPDDa9CVmToUZBzEnGSoG68uBHd9twm9K-ul9hCGneZzXdfHFbXeNUP6J1mvZCemWReMYAnPJ7NbsLfXLrga0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in/token",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in",
+								"token"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/x-www-form-urlencoded",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "client_id",
+											"value": "5db55e50dc97d50006acddef",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "123456",
+											"type": "text"
+										},
+										{
+											"key": "grant_type",
+											"value": "refresh_token",
+											"type": "text"
+										},
+										{
+											"key": "refresh_token",
+											"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1ZGI1NWU1MGRjOTdkNTAwMDZhY2RkZWYiLCJleHAiOjE1NzI2NDE3MTQsImlhdCI6MTU3MjYzODExNCwiaXNzIjoiYWNjb3VudHMuc2F2ZXNhZmUuYXBwIiwianRpIjoiNWRiYzhkYTJhODIwYTIzMTgzMDcwYzA5Iiwia2lkIjoiY2E4YTFjODhhN2M2NTU3NjBmNmI4NmQxODJkYzBjNWY1OTJlYzE1MSIsIm5iZiI6MTU3MjYzODExNCwic2NvcGUiOiJwcm9maWxlOndyaXRlIHByb2ZpbGU6ZGVsZXRlIiwic3ViIjoiNWRhZjZkZThkYzk3ZDUwMDA2YWNkZGViIn0.vxNuUVFUnsiOugvOlvO6zcsOy3L7pcXIIuNVjw807WShXT21YUFW6OzzyYnIlkcuakT6aERSGNMqTcKrMrkz7jzqqvKMoXT0Ck89TuXwUT3lMo2D2RU48wgQNXnWEIRF0UeSC3Rsc2R-PRZUJhbnda7HlYkEBVAIbbCiByiML3DSHJOyu7pd1eqGPU6_EnV5ZhR2scFRPx0Rlk1XatKGtevsSC5AscO5Rt4cyFwO-CJfJ9ZFYS6GBegiYsmPYSWamRc-1orkedn2o_BEEDuI9A6rz0j35n4XoAIb8xWBpkD6ZA9dPbWpiin-IiLt78IHAV1y-yHnOuQgvaM0fp_2cE4aQa7B8vseaQQEYzacJpTv1fBBD2UC6BFkGHkxTetOzMhQcPrFD--19eWc7bkpuWnAFdctZGf4qvzGQXnx3aRcvMf2_K78XUyxViTGy36jI8MIrMD9Oqh73oBAwodT7CZjZESzu8O2HuPgiAQ9nKJudoqB9Go6QEbIoI_Lfz5D4_RS2hwTTEja1wQXnXV3sg7ooMpCcTz58G0xg2ZisLsh9jNdnlabPxQ9XyhbdE616hE1mutt4LXmMTsk7JtSIsrPDDa9CVmToUZBzEnGSoG68uBHd9twm9K-ul9hCGneZzXdfHFbXeNUP6J1mvZCemWReMYAnPJ7NbsLfXLrga0",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://localhost:3230/sign-in/token",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "3230",
+									"path": [
+										"sign-in",
+										"token"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 01 Nov 2019 19:55:54 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1101"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI1ZGI1NWU1MGRjOTdkNTAwMDZhY2RkZWYiLCJleHAiOjE1NzI2Mzg0NTQsImlhdCI6MTU3MjYzODE1NCwiaXNzIjoiYWNjb3VudHMuc2F2ZXNhZmUuYXBwIiwia2lkIjoiY2E4YTFjODhhN2M2NTU3NjBmNmI4NmQxODJkYzBjNWY1OTJlYzE1MSIsIm5iZiI6MTU3MjYzODE1NCwic2NvcGUiOiJwcm9maWxlOndyaXRlIHByb2ZpbGU6ZGVsZXRlIiwic3ViIjoiNWRhZjZkZThkYzk3ZDUwMDA2YWNkZGViIn0.BYAtk0dZjApAwdFhm4MdB2XVVp6X4Cp4wNLdcEyqKaKa-Aaek_2Qr4yBIb6UEoflWcRK7fIgYxccJ9mMbsN_KGy0S4wlDwkBiCmXcXkJnmS8I1mNHLhMilUCex3htZsZ3D2mI7M7YSs_CeQNEjrXn_9cTYUelUYmTNUeBZsjLURhYmIbdJKF9S102fi2G_HJnQjetgaLLqaewOGBNwYmWp9ImMsl5iRk3G1RsRrKF1XDWoT_QJO9G3QvnwH4W3Cz6iH5JbsNeuFlBgOG48YtK3HnHUbpWYYLDJRAdfuKgrpB2GGDAftMbF9FFCeUaXKQEuAKNlWbzejIvrtDo8Tjcm8B8drRBE5HIfzacPvamscmhxQV4ffFqhB1bIYm39gSRcbVWKFojEtjyuqRWaTDXEIgfH1q0QPUafXja7nz1zTUqEbDcrRRXx_XIA9w__KaFK4ycSbR5rf7zZ2eu4sJBL_Q5Co3QAneNuaTSDwBccE-dDH6TLZXniYGYJynMTP4pQT_MccIfrqheQKpM-5kJvX2JkPtoRXsNsL7SisDOPVZ86s5w3ziUCZpjvsXRM8O3wCC7_DpZGhtRx0_vsmhMKQ5Srzsd7pVgI-YcPz5KSbrr99MZWSwMvFQuxDqALFWsId35cwv236pQwd4aEbQ4xbYMw3uuVEJVoLy9ygajUw\",\n    \"expires_in\": 300,\n    \"token_type\": \"access_token\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Authenticate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Origin",
+								"value": "https://localhost:3230",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"identifier\": \"vflopes\",\n\t\"password\": \"123456\",\n\t\"recaptcha_response\": \"test\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in/authenticate",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in",
+								"authenticate"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "https://localhost:3230",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"identifier\": \"vflopes\",\n\t\"password\": \"123456\",\n\t\"recaptcha_response\": \"test\"\n}"
+								},
+								"url": {
+									"raw": "https://localhost:3230/sign-in/authenticate",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "3230",
+									"path": [
+										"sign-in",
+										"authenticate"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "https://localhost:3230"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "SSO_SESS=bmun4tsnsg8srh4qic90; Path=/; HttpOnly; Secure; SameSite=Lax"
+								},
+								{
+									"key": "Set-Cookie",
+									"value": "SSO_SUB=5daf6de8dc97d50006acddeb; Path=/; Secure; SameSite=Lax"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Nov 2019 12:11:36 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "134"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"challenge\": \"bmun4u4nsg8srh4qic9g\",\n    \"activation_method\": 1,\n    \"subject\": \"5daf6de8dc97d50006acddeb\",\n    \"expiration\": 0,\n    \"name\": \"Victor França\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Activate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Origin",
+								"value": "https://localhost:3230",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"challenge\": \"bmun7tknsg8srh4qicbg\",\n    \"subject\": \"5daf6de8dc97d50006acddeb\",\n    \"activation_code\": \"181063\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in/activate",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in",
+								"activate"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Origin",
+										"value": "https://localhost:3230",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"challenge\": \"bmun7tknsg8srh4qicbg\",\n    \"subject\": \"5daf6de8dc97d50006acddeb\",\n    \"activation_code\": \"181063\"\n}"
+								},
+								"url": {
+									"raw": "https://localhost:3230/sign-in/activate",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "3230",
+									"path": [
+										"sign-in",
+										"activate"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Credentials",
+									"value": "true"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "https://localhost:3230"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 02 Nov 2019 12:18:23 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "16"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"expiration\": 0\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Implicit Flow",
+			"item": [
+				{
+					"name": "Authorization Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://localhost:3230/sign-in?client_id=5db55e50dc97d50006acddef&response_type=token&redirect_uri=https://localhost:3230/sign-in&scopes=profile:write profile:delete&state=helloworld\n",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "3230",
+							"path": [
+								"sign-in"
+							],
+							"query": [
+								{
+									"key": "client_id",
+									"value": "5db55e50dc97d50006acddef"
+								},
+								{
+									"key": "response_type",
+									"value": "token"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://localhost:3230/sign-in"
+								},
+								{
+									"key": "scopes",
+									"value": "profile:write profile:delete"
+								},
+								{
+									"key": "state",
+									"value": "helloworld\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

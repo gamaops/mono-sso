@@ -1,6 +1,10 @@
 # Mono SSO
 
-Mono SSO is an OAuth 2 compliant SSO focused on scalability and performance to provide authorization for SCSs and microservices.
+Mono SSO is an OAuth 2 compliant SSO focused on scalability and performance to provide authorization for SCSs and microservices. You can easily develop your SSO front-end using the Postman collection provided [here](api/postman/Mono SSO.postman_collection.json) to understand how to interact with SSO Provider.
+
+* Authentication - this folder contains the requests related to SSO resource owner authentication
+* Implicit Flow - OAuth2 implicit flow token grant
+* Authorization Code Flow - OAuth2 authorization code flow token grant
 
 ----------------
 
@@ -68,3 +72,34 @@ Environment Var                  | Type     | Description                       
 `SSO_REDIS_MAX_POOL_SIZE`        | int      | Maximum number of Redis connections on pool                                                                                        | `"5"`
 `SSO_REDIS_MIN_POOL_SIZE`        | int      | Minimum number of Redis connections on pool                                                                                        | `"1"`
 `SSO_REDIS_NODE`                 | int      | When using Redis standalone specify the address here                                                                               | `"127.0.0.1:6379"`
+
+----------------
+
+## SSO Service
+
+SSO Service is responsible for providing the private API to interact with SSO persistence and validation. The dependencies are:
+
+* Redis - store some states and caches
+* MongoDB - persistence for SSO entities data
+
+All the interfaces provided by this application are specified in [sso-service.proto](pkg/idl/sso-service/sso-service.proto) and the available configurations are:
+
+Environment Var                | Type     | Description                                                       | Default Value
+-------------------------------|----------|-------------------------------------------------------------------|-------------------
+`SSO_REDIS_PREFIX`             | string   | Prefix to be used when setting keys in Redis                      | `"sso"`
+`SSO_REDIS_SENTINEL`           | boolean  | Enables Redis Sentinel connection                                 | `"false"`
+`SSO_REDIS_NODES`              | strings  | When using Redis Sentinel specify the nodes here                  | `""`
+`SSO_REDIS_PASSWORD`           | string   | Redis password                                                    | `""`
+`SSO_REDIS_DB`                 | int      | Redis database to pick                                            | `"0"`
+`SSO_REDIS_MASTER`             | string   | Redis Sentinel master to use                                      | `""`
+`SSO_REDIS_MAX_POOL_SIZE`      | int      | Maximum number of Redis connections on pool                       | `"5"`
+`SSO_REDIS_MIN_POOL_SIZE`      | int      | Minimum number of Redis connections on pool                       | `"1"`
+`SSO_REDIS_NODE`               | int      | When using Redis standalone specify the address here              | `"127.0.0.1:6379"`
+`SSO_MONGODB_URI`              | string   | URI to connect to MongoDB                                         | `""`
+`SSO_MONGODB_CONNECT_TIMEOUT`  | duration | Maximum time to connect to MongoDB                                | `"15s"`
+`SSO_MONGODB_DATABASE`         | string   | Database name to use from MongoDB                                 | `"sso"`
+`SSO_MONGODB_SHUTDOWN_TIMEOUT` | duration | Maximum time to wait for MongoDB client connection to shutdown    | `"5s"`
+`SSO_GRPC_LISTEN`              | string   | Address to bind the gRPC server                                   | `"0.0.0.0:3231"`
+`SSO_GRPC_KEEP_ALIVE`          | duration | Keep alive connections maximum duration                           | `"2m"`
+`SSO_PRETTY_LOG`               | boolean  | Enable pretty log print, otherwise it'll be printed as JSON lines | `"true"`
+`SSO_LOG_LEVEL`                | string   | Log level, can be: `debug, info, warn, error`                     | `"debug"`

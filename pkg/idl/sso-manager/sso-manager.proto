@@ -11,22 +11,26 @@ enum ClientType {
 	CONFIDENTIAL = 1;
 }
 
-message CreateClientRequest {
-	ClientType type = 1;
-	repeated string redirect_uris = 2;
-	string name = 3;
+message UpsertClientRequest {
+	sso.common.RequestSession session = 1;
+	string client_id = 2;
+	ClientType type = 3;
+	repeated string redirect_uris = 4;
+	string name = 5;
 }
 
-message CreateClientResponse {
+message UpsertClientResponse {
 	sso.common.ResponseStatus status = 1;
 	string client_id = 2;
 	string client_secret = 3;
 }
 
 message CreateScopeRequest {
-	string client_id = 1;
-	string scope = 2;
-	string description = 3;
+	sso.common.RequestSession session = 1;
+	string scope_id = 1;
+	string client_id = 2;
+	string scope = 3;
+	map description = 4;
 }
 
 message CreateScopeResponse {
@@ -35,6 +39,6 @@ message CreateScopeResponse {
 }
 
 service ClientService {
-	rpc CreateClient(CreateClientRequest) returns (CreateClientResponse);
+	rpc UpsertClient(UpsertClientRequest) returns (UpsertClientResponse);
 	rpc CreateScope(CreateScopeRequest) returns (CreateScopeResponse);
 }

@@ -197,14 +197,24 @@ func setup() {
 		Logger: log,
 	}
 
+	httpCors := cors.New(cors.Options{
+		AllowedOrigins:   viper.GetStringSlice("allowedOrigins"),
+		AllowCredentials: true,
+		AllowedMethods:   []string{"POST", "GET"},
+		Debug:            false,
+	})
+
 	Router.HandleFunc("/.well-known/jwks.json", handlers.JWKSHandler(ServiceOAuth2Jose))
 
-	Router.HandleFunc("/sign-in/authenticate", func(w http.ResponseWriter, r *http.Request) {
+	signInAuthenticateHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handlers.AuthenticateHandler(ServiceHTTPServer, ServiceAuthenticationModel, ServiceCache, w, r)
 	})
-	Router.HandleFunc("/sign-in/activate", func(w http.ResponseWriter, r *http.Request) {
+	Router.Handle("/sign-in/authenticate", httpCors.Handler(signInAuthenticateHandler))
+
+	signInActivateHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handlers.ActivateSessionHandler(ServiceHTTPServer, ServiceAuthenticationModel, ServiceCache, w, r)
 	})
+	Router.Handle("/sign-in/activate", httpCors.Handler(signInActivateHandler))
 
 	Router.HandleFunc("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 		handlers.IndexHandler(
@@ -217,7 +227,8 @@ func setup() {
 			r,
 		)
 	})
-	Router.HandleFunc("/sign-in/authorize", func(w http.ResponseWriter, r *http.Request) {
+
+	signInAuthorizeHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handlers.GrantScopesHandler(
 			ServiceHTTPServer,
 			ServiceAuthorizationModel,
@@ -227,6 +238,7 @@ func setup() {
 			r,
 		)
 	})
+	Router.Handle("/sign-in/authorize", httpCors.Handler(signInAuthorizeHandler))
 
 	Router.HandleFunc("/sign-in/exchange", func(w http.ResponseWriter, r *http.Request) {
 		handlers.ExchangeHandler(
@@ -247,15 +259,7 @@ func setup() {
 			r,
 		)
 	})
-
-	httpCors := cors.New(cors.Options{
-		AllowedOrigins:   viper.GetStringSlice("allowedOrigins"),
-		AllowCredentials: true,
-		AllowedMethods:   []string{"POST", "GET"},
-		Debug:            false,
-	})
-
-	http.Handle("/", httpCors.Handler(Router))
+	http.Handle("/", Router)
 
 	httpserver.StartServer(ServiceHTTPServer)
 
