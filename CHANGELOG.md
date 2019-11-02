@@ -1,3 +1,12 @@
+## 2019-11-02T12:50:05.774Z
+### 📝 - writing docs (project)
+
+#### none
+
+- Fix postman collection link
+
+-----------------------------
+
 ## 2019-11-02T12:47:57.329Z
 ### 📝 - writing docs (project)
 
