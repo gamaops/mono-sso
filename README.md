@@ -1,6 +1,6 @@
 # Mono SSO
 
-Mono SSO is an OAuth 2 compliant SSO focused on scalability and performance to provide authorization for SCSs and microservices. You can easily develop your SSO front-end using the Postman collection provided [here](api/postman/Mono SSO.postman_collection.json) to understand how to interact with SSO Provider.
+Mono SSO is an OAuth 2 compliant SSO focused on scalability and performance to provide authorization for SCSs and microservices. You can easily develop your SSO front-end using the Postman collection provided [here](api/postman/Mono%20SSO.postman_collection.json) to understand how to interact with SSO Provider.
 
 * Authentication - this folder contains the requests related to SSO resource owner authentication
 * Implicit Flow - OAuth2 implicit flow token grant
