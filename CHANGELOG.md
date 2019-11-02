@@ -1,3 +1,13 @@
+## 2019-11-02T12:47:57.329Z
+### 📝 - writing docs (project)
+
+#### none
+
+- Add postman collection
+- Add SSO Service documentation
+
+-----------------------------
+
 ## 2019-11-01T20:43:50.067Z
 ### 📝 - writing docs (project)
 
