@@ -53,20 +53,6 @@ CREATE TABLE IF NOT EXISTS sso.grant(
 	deleted_at timestamp with time zone
 ) WITHOUT OIDS;
 
-CREATE TABLE IF NOT EXISTS sso.session(
-	id char(36) not null,
-	account_id char(28) not null,
-	user_agent text not null,
-	remember_me boolean not null default FALSE,
-	forwarded_ips inet[] not null default '{}',
-	source_ip inet not null,
-	client_ip inet not null,
-	expires_at timestamp with time zone not null,
-	created_at timestamp with time zone not null,
-	updated_at timestamp with time zone not null,
-	deleted_at timestamp with time zone
-) WITHOUT OIDS;
-
 CREATE TABLE IF NOT EXISTS sso.token(
 	id char(36) not null,
 	account_id char(28) not null,
@@ -101,10 +87,6 @@ ALTER TABLE sso.grant ADD CONSTRAINT pk_sso_grant PRIMARY KEY(scope_id, account_
 ALTER TABLE sso.grant ADD CONSTRAINT unq_sso_grant_scope_id_account_id UNIQUE (scope_id, account_id);
 ALTER TABLE sso.grant ADD CONSTRAINT fk_sso_grant_scope_id FOREIGN KEY (scope_id) REFERENCES sso.scope (id);
 ALTER TABLE sso.grant ADD CONSTRAINT fk_sso_grant_account_id FOREIGN KEY (account_id) REFERENCES sso.account (id);
-
-ALTER TABLE sso.session ADD CONSTRAINT pk_sso_session PRIMARY KEY(id, account_id);
-ALTER TABLE sso.session ADD CONSTRAINT unq_sso_session_id UNIQUE (id, account_id);
-ALTER TABLE sso.session ADD CONSTRAINT fk_sso_session_account_id FOREIGN KEY (account_id) REFERENCES sso.account (id);
 
 ALTER TABLE sso.token ADD CONSTRAINT pk_sso_token PRIMARY KEY(id);
 ALTER TABLE sso.token ADD CONSTRAINT pk_sso_token_id UNIQUE (id);
