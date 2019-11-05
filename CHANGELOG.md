@@ -1,3 +1,12 @@
+## 2019-11-05T09:41:48.209Z
+### 📝 - writing docs (project)
+
+#### none
+
+- Fix README configuration type
+
+-----------------------------
+
 ## 2019-11-05T09:40:07.410Z
 ### 🆕 - add code or file(s) (project)
 
