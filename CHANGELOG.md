@@ -1,3 +1,12 @@
+## 2019-11-05T09:40:07.410Z
+### 🆕 - add code or file(s) (project)
+
+#### none
+
+- Finish migration to Postgres
+
+-----------------------------
+
 ## 2019-11-02T12:50:05.774Z
 ### 📝 - writing docs (project)
 
