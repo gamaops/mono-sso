@@ -96,7 +96,7 @@ Environment Var           | Type     | Description                              
 `SSO_REDIS_MIN_POOL_SIZE` | int      | Minimum number of Redis connections on pool                       | `"1"`
 `SSO_REDIS_NODE`          | int      | When using Redis standalone specify the address here              | `"127.0.0.1:6379"`
 `SSO_POSTGRES_URI`        | string   | URI to connect to Postgres                                        | `""`
-`SSO_POSTGRES_MAX_CONN`   | duration | Maximum number of connections to Postgres to keep on pool         | `"5"`
+`SSO_POSTGRES_MAX_CONN`   | int      | Maximum number of connections to Postgres to keep on pool         | `"5"`
 `SSO_GRPC_LISTEN`         | string   | Address to bind the gRPC server                                   | `"0.0.0.0:3231"`
 `SSO_GRPC_KEEP_ALIVE`     | duration | Keep alive connections maximum duration                           | `"2m"`
 `SSO_PRETTY_LOG`          | boolean  | Enable pretty log print, otherwise it'll be printed as JSON lines | `"true"`
