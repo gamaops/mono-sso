@@ -50,62 +50,78 @@ func (ClientType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_7c09c63b2fb56424, []int{0}
 }
 
-type CreateClientRequest struct {
-	Type                 ClientType `protobuf:"varint,1,opt,name=type,proto3,enum=sso.manager.ClientType" json:"type,omitempty"`
-	RedirectUris         []string   `protobuf:"bytes,2,rep,name=redirect_uris,json=redirectUris,proto3" json:"redirect_uris,omitempty"`
-	Name                 string     `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}   `json:"-"`
-	XXX_unrecognized     []byte     `json:"-"`
-	XXX_sizecache        int32      `json:"-"`
+type UpsertClientRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	ClientId             string                     `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	Type                 ClientType                 `protobuf:"varint,3,opt,name=type,proto3,enum=sso.manager.ClientType" json:"type,omitempty"`
+	RedirectUris         []string                   `protobuf:"bytes,4,rep,name=redirect_uris,json=redirectUris,proto3" json:"redirect_uris,omitempty"`
+	Name                 string                     `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
 }
 
-func (m *CreateClientRequest) Reset()         { *m = CreateClientRequest{} }
-func (m *CreateClientRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateClientRequest) ProtoMessage()    {}
-func (*CreateClientRequest) Descriptor() ([]byte, []int) {
+func (m *UpsertClientRequest) Reset()         { *m = UpsertClientRequest{} }
+func (m *UpsertClientRequest) String() string { return proto.CompactTextString(m) }
+func (*UpsertClientRequest) ProtoMessage()    {}
+func (*UpsertClientRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7c09c63b2fb56424, []int{0}
 }
 
-func (m *CreateClientRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateClientRequest.Unmarshal(m, b)
+func (m *UpsertClientRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertClientRequest.Unmarshal(m, b)
 }
-func (m *CreateClientRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateClientRequest.Marshal(b, m, deterministic)
+func (m *UpsertClientRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertClientRequest.Marshal(b, m, deterministic)
 }
-func (m *CreateClientRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateClientRequest.Merge(m, src)
+func (m *UpsertClientRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertClientRequest.Merge(m, src)
 }
-func (m *CreateClientRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateClientRequest.Size(m)
+func (m *UpsertClientRequest) XXX_Size() int {
+	return xxx_messageInfo_UpsertClientRequest.Size(m)
 }
-func (m *CreateClientRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateClientRequest.DiscardUnknown(m)
+func (m *UpsertClientRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertClientRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateClientRequest proto.InternalMessageInfo
+var xxx_messageInfo_UpsertClientRequest proto.InternalMessageInfo
 
-func (m *CreateClientRequest) GetType() ClientType {
+func (m *UpsertClientRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *UpsertClientRequest) GetClientId() string {
+	if m != nil {
+		return m.ClientId
+	}
+	return ""
+}
+
+func (m *UpsertClientRequest) GetType() ClientType {
 	if m != nil {
 		return m.Type
 	}
 	return ClientType_PUBLIC
 }
 
-func (m *CreateClientRequest) GetRedirectUris() []string {
+func (m *UpsertClientRequest) GetRedirectUris() []string {
 	if m != nil {
 		return m.RedirectUris
 	}
 	return nil
 }
 
-func (m *CreateClientRequest) GetName() string {
+func (m *UpsertClientRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-type CreateClientResponse struct {
+type UpsertClientResponse struct {
 	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
 	ClientId             string                     `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	ClientSecret         string                     `protobuf:"bytes,3,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
@@ -114,193 +130,382 @@ type CreateClientResponse struct {
 	XXX_sizecache        int32                      `json:"-"`
 }
 
-func (m *CreateClientResponse) Reset()         { *m = CreateClientResponse{} }
-func (m *CreateClientResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateClientResponse) ProtoMessage()    {}
-func (*CreateClientResponse) Descriptor() ([]byte, []int) {
+func (m *UpsertClientResponse) Reset()         { *m = UpsertClientResponse{} }
+func (m *UpsertClientResponse) String() string { return proto.CompactTextString(m) }
+func (*UpsertClientResponse) ProtoMessage()    {}
+func (*UpsertClientResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7c09c63b2fb56424, []int{1}
 }
 
-func (m *CreateClientResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateClientResponse.Unmarshal(m, b)
+func (m *UpsertClientResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertClientResponse.Unmarshal(m, b)
 }
-func (m *CreateClientResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateClientResponse.Marshal(b, m, deterministic)
+func (m *UpsertClientResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertClientResponse.Marshal(b, m, deterministic)
 }
-func (m *CreateClientResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateClientResponse.Merge(m, src)
+func (m *UpsertClientResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertClientResponse.Merge(m, src)
 }
-func (m *CreateClientResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateClientResponse.Size(m)
+func (m *UpsertClientResponse) XXX_Size() int {
+	return xxx_messageInfo_UpsertClientResponse.Size(m)
 }
-func (m *CreateClientResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateClientResponse.DiscardUnknown(m)
+func (m *UpsertClientResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertClientResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateClientResponse proto.InternalMessageInfo
+var xxx_messageInfo_UpsertClientResponse proto.InternalMessageInfo
 
-func (m *CreateClientResponse) GetStatus() *sso_common.ResponseStatus {
+func (m *UpsertClientResponse) GetStatus() *sso_common.ResponseStatus {
 	if m != nil {
 		return m.Status
 	}
 	return nil
 }
 
-func (m *CreateClientResponse) GetClientId() string {
+func (m *UpsertClientResponse) GetClientId() string {
 	if m != nil {
 		return m.ClientId
 	}
 	return ""
 }
 
-func (m *CreateClientResponse) GetClientSecret() string {
+func (m *UpsertClientResponse) GetClientSecret() string {
 	if m != nil {
 		return m.ClientSecret
 	}
 	return ""
 }
 
-type CreateScopeRequest struct {
-	ClientId             string   `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	Scope                string   `protobuf:"bytes,2,opt,name=scope,proto3" json:"scope,omitempty"`
-	Description          string   `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+type DeleteClientRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	ClientId             string                     `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
 }
 
-func (m *CreateScopeRequest) Reset()         { *m = CreateScopeRequest{} }
-func (m *CreateScopeRequest) String() string { return proto.CompactTextString(m) }
-func (*CreateScopeRequest) ProtoMessage()    {}
-func (*CreateScopeRequest) Descriptor() ([]byte, []int) {
+func (m *DeleteClientRequest) Reset()         { *m = DeleteClientRequest{} }
+func (m *DeleteClientRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteClientRequest) ProtoMessage()    {}
+func (*DeleteClientRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7c09c63b2fb56424, []int{2}
 }
 
-func (m *CreateScopeRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateScopeRequest.Unmarshal(m, b)
+func (m *DeleteClientRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteClientRequest.Unmarshal(m, b)
 }
-func (m *CreateScopeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateScopeRequest.Marshal(b, m, deterministic)
+func (m *DeleteClientRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteClientRequest.Marshal(b, m, deterministic)
 }
-func (m *CreateScopeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateScopeRequest.Merge(m, src)
+func (m *DeleteClientRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteClientRequest.Merge(m, src)
 }
-func (m *CreateScopeRequest) XXX_Size() int {
-	return xxx_messageInfo_CreateScopeRequest.Size(m)
+func (m *DeleteClientRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteClientRequest.Size(m)
 }
-func (m *CreateScopeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateScopeRequest.DiscardUnknown(m)
+func (m *DeleteClientRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteClientRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateScopeRequest proto.InternalMessageInfo
+var xxx_messageInfo_DeleteClientRequest proto.InternalMessageInfo
 
-func (m *CreateScopeRequest) GetClientId() string {
+func (m *DeleteClientRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *DeleteClientRequest) GetClientId() string {
 	if m != nil {
 		return m.ClientId
 	}
 	return ""
 }
 
-func (m *CreateScopeRequest) GetScope() string {
-	if m != nil {
-		return m.Scope
-	}
-	return ""
-}
-
-func (m *CreateScopeRequest) GetDescription() string {
-	if m != nil {
-		return m.Description
-	}
-	return ""
-}
-
-type CreateScopeResponse struct {
+type DeleteClientResponse struct {
 	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
-	ScopeId              string                     `protobuf:"bytes,2,opt,name=scope_id,json=scopeId,proto3" json:"scope_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
 	XXX_unrecognized     []byte                     `json:"-"`
 	XXX_sizecache        int32                      `json:"-"`
 }
 
-func (m *CreateScopeResponse) Reset()         { *m = CreateScopeResponse{} }
-func (m *CreateScopeResponse) String() string { return proto.CompactTextString(m) }
-func (*CreateScopeResponse) ProtoMessage()    {}
-func (*CreateScopeResponse) Descriptor() ([]byte, []int) {
+func (m *DeleteClientResponse) Reset()         { *m = DeleteClientResponse{} }
+func (m *DeleteClientResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteClientResponse) ProtoMessage()    {}
+func (*DeleteClientResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7c09c63b2fb56424, []int{3}
 }
 
-func (m *CreateScopeResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_CreateScopeResponse.Unmarshal(m, b)
+func (m *DeleteClientResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteClientResponse.Unmarshal(m, b)
 }
-func (m *CreateScopeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_CreateScopeResponse.Marshal(b, m, deterministic)
+func (m *DeleteClientResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteClientResponse.Marshal(b, m, deterministic)
 }
-func (m *CreateScopeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CreateScopeResponse.Merge(m, src)
+func (m *DeleteClientResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteClientResponse.Merge(m, src)
 }
-func (m *CreateScopeResponse) XXX_Size() int {
-	return xxx_messageInfo_CreateScopeResponse.Size(m)
+func (m *DeleteClientResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteClientResponse.Size(m)
 }
-func (m *CreateScopeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CreateScopeResponse.DiscardUnknown(m)
+func (m *DeleteClientResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteClientResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CreateScopeResponse proto.InternalMessageInfo
+var xxx_messageInfo_DeleteClientResponse proto.InternalMessageInfo
 
-func (m *CreateScopeResponse) GetStatus() *sso_common.ResponseStatus {
+func (m *DeleteClientResponse) GetStatus() *sso_common.ResponseStatus {
 	if m != nil {
 		return m.Status
 	}
 	return nil
 }
 
-func (m *CreateScopeResponse) GetScopeId() string {
+type UpsertScopeRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	ClientId             string                     `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	Scope                string                     `protobuf:"bytes,3,opt,name=scope,proto3" json:"scope,omitempty"`
+	Description          string                     `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *UpsertScopeRequest) Reset()         { *m = UpsertScopeRequest{} }
+func (m *UpsertScopeRequest) String() string { return proto.CompactTextString(m) }
+func (*UpsertScopeRequest) ProtoMessage()    {}
+func (*UpsertScopeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{4}
+}
+
+func (m *UpsertScopeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertScopeRequest.Unmarshal(m, b)
+}
+func (m *UpsertScopeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertScopeRequest.Marshal(b, m, deterministic)
+}
+func (m *UpsertScopeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertScopeRequest.Merge(m, src)
+}
+func (m *UpsertScopeRequest) XXX_Size() int {
+	return xxx_messageInfo_UpsertScopeRequest.Size(m)
+}
+func (m *UpsertScopeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertScopeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertScopeRequest proto.InternalMessageInfo
+
+func (m *UpsertScopeRequest) GetSession() *sso_common.RequestSession {
 	if m != nil {
-		return m.ScopeId
+		return m.Session
+	}
+	return nil
+}
+
+func (m *UpsertScopeRequest) GetClientId() string {
+	if m != nil {
+		return m.ClientId
 	}
 	return ""
 }
 
+func (m *UpsertScopeRequest) GetScope() string {
+	if m != nil {
+		return m.Scope
+	}
+	return ""
+}
+
+func (m *UpsertScopeRequest) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+type UpsertScopeResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *UpsertScopeResponse) Reset()         { *m = UpsertScopeResponse{} }
+func (m *UpsertScopeResponse) String() string { return proto.CompactTextString(m) }
+func (*UpsertScopeResponse) ProtoMessage()    {}
+func (*UpsertScopeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{5}
+}
+
+func (m *UpsertScopeResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertScopeResponse.Unmarshal(m, b)
+}
+func (m *UpsertScopeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertScopeResponse.Marshal(b, m, deterministic)
+}
+func (m *UpsertScopeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertScopeResponse.Merge(m, src)
+}
+func (m *UpsertScopeResponse) XXX_Size() int {
+	return xxx_messageInfo_UpsertScopeResponse.Size(m)
+}
+func (m *UpsertScopeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertScopeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertScopeResponse proto.InternalMessageInfo
+
+func (m *UpsertScopeResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+type DeleteScopeRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	ClientId             string                     `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	Scope                string                     `protobuf:"bytes,3,opt,name=scope,proto3" json:"scope,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteScopeRequest) Reset()         { *m = DeleteScopeRequest{} }
+func (m *DeleteScopeRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteScopeRequest) ProtoMessage()    {}
+func (*DeleteScopeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{6}
+}
+
+func (m *DeleteScopeRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteScopeRequest.Unmarshal(m, b)
+}
+func (m *DeleteScopeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteScopeRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteScopeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteScopeRequest.Merge(m, src)
+}
+func (m *DeleteScopeRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteScopeRequest.Size(m)
+}
+func (m *DeleteScopeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteScopeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteScopeRequest proto.InternalMessageInfo
+
+func (m *DeleteScopeRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *DeleteScopeRequest) GetClientId() string {
+	if m != nil {
+		return m.ClientId
+	}
+	return ""
+}
+
+func (m *DeleteScopeRequest) GetScope() string {
+	if m != nil {
+		return m.Scope
+	}
+	return ""
+}
+
+type DeleteScopeResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteScopeResponse) Reset()         { *m = DeleteScopeResponse{} }
+func (m *DeleteScopeResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteScopeResponse) ProtoMessage()    {}
+func (*DeleteScopeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{7}
+}
+
+func (m *DeleteScopeResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteScopeResponse.Unmarshal(m, b)
+}
+func (m *DeleteScopeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteScopeResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteScopeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteScopeResponse.Merge(m, src)
+}
+func (m *DeleteScopeResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteScopeResponse.Size(m)
+}
+func (m *DeleteScopeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteScopeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteScopeResponse proto.InternalMessageInfo
+
+func (m *DeleteScopeResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("sso.manager.ClientType", ClientType_name, ClientType_value)
-	proto.RegisterType((*CreateClientRequest)(nil), "sso.manager.CreateClientRequest")
-	proto.RegisterType((*CreateClientResponse)(nil), "sso.manager.CreateClientResponse")
-	proto.RegisterType((*CreateScopeRequest)(nil), "sso.manager.CreateScopeRequest")
-	proto.RegisterType((*CreateScopeResponse)(nil), "sso.manager.CreateScopeResponse")
+	proto.RegisterType((*UpsertClientRequest)(nil), "sso.manager.UpsertClientRequest")
+	proto.RegisterType((*UpsertClientResponse)(nil), "sso.manager.UpsertClientResponse")
+	proto.RegisterType((*DeleteClientRequest)(nil), "sso.manager.DeleteClientRequest")
+	proto.RegisterType((*DeleteClientResponse)(nil), "sso.manager.DeleteClientResponse")
+	proto.RegisterType((*UpsertScopeRequest)(nil), "sso.manager.UpsertScopeRequest")
+	proto.RegisterType((*UpsertScopeResponse)(nil), "sso.manager.UpsertScopeResponse")
+	proto.RegisterType((*DeleteScopeRequest)(nil), "sso.manager.DeleteScopeRequest")
+	proto.RegisterType((*DeleteScopeResponse)(nil), "sso.manager.DeleteScopeResponse")
 }
 
 func init() { proto.RegisterFile("sso-manager/sso-manager.proto", fileDescriptor_7c09c63b2fb56424) }
 
 var fileDescriptor_7c09c63b2fb56424 = []byte{
-	// 424 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0x5d, 0x6f, 0x94, 0x40,
-	0x14, 0x95, 0xb6, 0xae, 0xdd, 0xbb, 0x5b, 0xb3, 0x19, 0x9b, 0x88, 0x34, 0x46, 0xc4, 0x97, 0x4d,
-	0x4d, 0x21, 0xe2, 0x2f, 0xb0, 0xa8, 0x09, 0x49, 0x53, 0x1b, 0x68, 0x5f, 0x7c, 0x69, 0x28, 0xdc,
-	0xe0, 0xc4, 0xc2, 0x8c, 0x73, 0x07, 0x93, 0xc6, 0xbf, 0xe0, 0xef, 0xf1, 0xf7, 0x19, 0x86, 0x21,
-	0xcb, 0xfa, 0xf5, 0xe2, 0xdb, 0x9d, 0x33, 0x87, 0x7b, 0xce, 0x3d, 0x73, 0x81, 0xa7, 0x44, 0xe2,
-	0xa4, 0x29, 0xda, 0xa2, 0x46, 0x15, 0x4d, 0xea, 0x50, 0x2a, 0xa1, 0x05, 0x5b, 0x10, 0x89, 0xd0,
-	0x42, 0xde, 0x51, 0x7f, 0x5f, 0x8a, 0xa6, 0x11, 0x6d, 0xb4, 0x29, 0x07, 0x66, 0xf0, 0x0d, 0x1e,
-	0x25, 0x0a, 0x0b, 0x8d, 0xc9, 0x2d, 0xc7, 0x56, 0x67, 0xf8, 0xa5, 0x43, 0xd2, 0xec, 0x25, 0xec,
-	0xe9, 0x3b, 0x89, 0xae, 0xe3, 0x3b, 0xeb, 0x87, 0xf1, 0xe3, 0x70, 0xd2, 0x2f, 0x1c, 0x98, 0x97,
-	0x77, 0x12, 0x33, 0x43, 0x62, 0x2f, 0xe0, 0x40, 0x61, 0xc5, 0x15, 0x96, 0xfa, 0xba, 0x53, 0x9c,
-	0xdc, 0x1d, 0x7f, 0x77, 0x3d, 0xcf, 0x96, 0x23, 0x78, 0xa5, 0x38, 0x31, 0x06, 0x7b, 0x6d, 0xd1,
-	0xa0, 0xbb, 0xeb, 0x3b, 0xeb, 0x79, 0x66, 0xea, 0xe0, 0xbb, 0x03, 0x87, 0xdb, 0xea, 0x24, 0x45,
-	0x4b, 0xc8, 0x62, 0x98, 0x91, 0x2e, 0x74, 0x47, 0xc6, 0xc0, 0x22, 0xf6, 0x8c, 0x01, 0x6b, 0x7c,
-	0x64, 0xe5, 0x86, 0x91, 0x59, 0x26, 0x3b, 0x82, 0x79, 0x69, 0xba, 0x5c, 0xf3, 0xca, 0xdd, 0x31,
-	0x2a, 0xfb, 0x03, 0x90, 0x56, 0xbd, 0x45, 0x7b, 0x49, 0x58, 0x2a, 0xd4, 0xd6, 0xc6, 0x72, 0x00,
-	0x73, 0x83, 0x05, 0x1c, 0xd8, 0xe0, 0x26, 0x2f, 0x85, 0xc4, 0x31, 0x8a, 0xad, 0xbe, 0xce, 0x2f,
-	0x7d, 0x0f, 0xe1, 0x3e, 0xf5, 0x64, 0x2b, 0x38, 0x1c, 0x98, 0x0f, 0x8b, 0x0a, 0xa9, 0x54, 0x5c,
-	0x6a, 0x2e, 0x5a, 0xab, 0x35, 0x85, 0x82, 0x6a, 0x8c, 0xdd, 0x4a, 0xfd, 0xc7, 0xdc, 0x4f, 0x60,
-	0xdf, 0xa8, 0x6e, 0xc6, 0x7e, 0x60, 0xce, 0x69, 0x75, 0x7c, 0x0c, 0xb0, 0x79, 0x2c, 0x06, 0x30,
-	0xbb, 0xb8, 0x3a, 0x3d, 0x4b, 0x93, 0xd5, 0x3d, 0xb6, 0x82, 0x65, 0xf2, 0xe1, 0xfc, 0x7d, 0xfa,
-	0xf6, 0xdd, 0xf9, 0x65, 0xfa, 0xe6, 0x6c, 0xe5, 0xc4, 0x3f, 0x1c, 0x38, 0x48, 0x6c, 0x1a, 0xea,
-	0x2b, 0x2f, 0x91, 0xe5, 0xb0, 0x9c, 0x3e, 0x0e, 0xf3, 0xb7, 0xb7, 0xe0, 0xf7, 0xad, 0xf1, 0x9e,
-	0xff, 0x83, 0x61, 0x27, 0xbc, 0x80, 0xc5, 0x64, 0x70, 0xf6, 0xec, 0x0f, 0x5f, 0x4c, 0xd3, 0xf7,
-	0xfc, 0xbf, 0x13, 0x86, 0x8e, 0xa7, 0xaf, 0x3e, 0x46, 0x35, 0xd7, 0x9f, 0xba, 0x9b, 0x3e, 0xa7,
-	0xa8, 0x2e, 0x9a, 0x42, 0x48, 0x8a, 0x1a, 0xd1, 0x8a, 0x13, 0x22, 0x11, 0xc9, 0xcf, 0x75, 0xc4,
-	0xab, 0xdb, 0xe9, 0x4f, 0x72, 0x33, 0x33, 0xbb, 0xff, 0xfa, 0x67, 0x00, 0x00, 0x00, 0xff, 0xff,
-	0x64, 0x37, 0xa0, 0x48, 0x46, 0x03, 0x00, 0x00,
+	// 506 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x51, 0x6e, 0xd3, 0x4c,
+	0x10, 0xfe, 0xdd, 0xa6, 0xf9, 0xc9, 0xd8, 0x41, 0xd1, 0x36, 0x12, 0x56, 0x2a, 0x84, 0x71, 0x5f,
+	0xa2, 0xa2, 0xda, 0x22, 0x70, 0x01, 0x9a, 0x82, 0x64, 0x54, 0x95, 0x62, 0x37, 0x2f, 0xbc, 0x54,
+	0xae, 0x3d, 0x4a, 0x57, 0xc4, 0x5e, 0xb3, 0xb3, 0x41, 0xea, 0x03, 0x37, 0xe0, 0x0e, 0xdc, 0x88,
+	0x23, 0x70, 0x16, 0x64, 0x7b, 0xa3, 0x3a, 0xc1, 0x54, 0xa8, 0xa8, 0xe2, 0x6d, 0x3d, 0xfb, 0x79,
+	0xbe, 0xf9, 0x66, 0xbe, 0x59, 0x78, 0x4c, 0x24, 0x0e, 0xb3, 0x38, 0x8f, 0xe7, 0x28, 0xfd, 0xc6,
+	0xd9, 0x2b, 0xa4, 0x50, 0x82, 0x99, 0x44, 0xc2, 0xd3, 0xa1, 0xd1, 0x5e, 0x79, 0x9f, 0x88, 0x2c,
+	0x13, 0xb9, 0x7f, 0x73, 0xac, 0x91, 0xee, 0x77, 0x03, 0x76, 0x67, 0x05, 0xa1, 0x54, 0xd3, 0x05,
+	0xc7, 0x5c, 0x85, 0xf8, 0x69, 0x89, 0xa4, 0xd8, 0x4b, 0xf8, 0x9f, 0x90, 0x88, 0x8b, 0xdc, 0x36,
+	0x1c, 0x63, 0x6c, 0x4e, 0x46, 0x5e, 0x99, 0x53, 0xff, 0xab, 0x51, 0x51, 0x8d, 0x08, 0x57, 0x50,
+	0xb6, 0x07, 0xbd, 0xa4, 0x4a, 0x73, 0xc1, 0x53, 0x7b, 0xcb, 0x31, 0xc6, 0xbd, 0xf0, 0x41, 0x1d,
+	0x08, 0x52, 0xf6, 0x0c, 0x3a, 0xea, 0xba, 0x40, 0x7b, 0xdb, 0x31, 0xc6, 0x0f, 0x27, 0x8f, 0xbc,
+	0x46, 0x8d, 0x5e, 0x4d, 0x7e, 0x7e, 0x5d, 0x60, 0x58, 0x81, 0xd8, 0x3e, 0xf4, 0x25, 0xa6, 0x5c,
+	0x62, 0xa2, 0x2e, 0x96, 0x92, 0x93, 0xdd, 0x71, 0xb6, 0xc7, 0xbd, 0xd0, 0x5a, 0x05, 0x67, 0x92,
+	0x13, 0x63, 0xd0, 0xc9, 0xe3, 0x0c, 0xed, 0x9d, 0x8a, 0xa9, 0x3a, 0xbb, 0x5f, 0x0d, 0x18, 0xae,
+	0x0b, 0xa2, 0x42, 0xe4, 0x84, 0x6c, 0x02, 0x5d, 0x52, 0xb1, 0x5a, 0x52, 0xbb, 0xa0, 0x1a, 0x15,
+	0x55, 0x88, 0x50, 0x23, 0x6f, 0xd7, 0xb3, 0x0f, 0x7d, 0x7d, 0x49, 0x98, 0x48, 0x54, 0x95, 0xb0,
+	0x5e, 0x68, 0xd5, 0xc1, 0xa8, 0x8a, 0xb9, 0x57, 0xb0, 0x7b, 0x8c, 0x0b, 0x54, 0x78, 0xdf, 0xed,
+	0x75, 0xdf, 0xc2, 0x70, 0x9d, 0xe9, 0xee, 0xba, 0xdd, 0x6f, 0x06, 0xb0, 0xba, 0x89, 0x51, 0x22,
+	0x0a, 0xbc, 0x47, 0x53, 0x0c, 0x61, 0x87, 0x4a, 0x0a, 0xdd, 0xbc, 0xfa, 0x83, 0x39, 0x60, 0xa6,
+	0x48, 0x89, 0xe4, 0x85, 0x2a, 0xc9, 0x3a, 0xd5, 0x5d, 0x33, 0xe4, 0x06, 0x2b, 0xdb, 0xea, 0x02,
+	0xff, 0x42, 0xec, 0x17, 0x60, 0x75, 0xe3, 0xfe, 0x89, 0xd6, 0x52, 0xc9, 0x1a, 0xfd, 0xdd, 0x95,
+	0x1c, 0x1c, 0x00, 0xdc, 0x2c, 0x12, 0x03, 0xe8, 0x9e, 0xcd, 0x8e, 0x4e, 0x82, 0xe9, 0xe0, 0x3f,
+	0x36, 0x00, 0x6b, 0xfa, 0xee, 0xf4, 0x4d, 0x70, 0xfc, 0xfa, 0xf4, 0x3c, 0x78, 0x75, 0x32, 0x30,
+	0x26, 0x3f, 0xb6, 0xa0, 0x3f, 0xd5, 0x4e, 0x95, 0x9f, 0x79, 0x82, 0x2c, 0x02, 0xab, 0xb9, 0x38,
+	0xcc, 0x59, 0xdb, 0xd0, 0x96, 0x47, 0x62, 0xf4, 0xf4, 0x16, 0x84, 0x96, 0x11, 0x81, 0xd5, 0x74,
+	0xe5, 0x46, 0xd2, 0x96, 0xd5, 0xd8, 0x48, 0xda, 0x6a, 0xe9, 0x33, 0x30, 0x1b, 0xc3, 0x67, 0x4f,
+	0x5a, 0xca, 0x68, 0xce, 0x72, 0xe4, 0xfc, 0x1e, 0xa0, 0x33, 0xbe, 0x07, 0xb3, 0x31, 0x84, 0x8d,
+	0x8c, 0xbf, 0xba, 0xe3, 0x0f, 0x8a, 0x3c, 0x7a, 0xfe, 0xc1, 0x9f, 0x73, 0x75, 0xb5, 0xbc, 0x2c,
+	0x87, 0xe6, 0xcf, 0xe3, 0x2c, 0x16, 0x05, 0xf9, 0x99, 0xc8, 0xc5, 0x21, 0x91, 0xf0, 0x8b, 0x8f,
+	0x73, 0x9f, 0xa7, 0x8b, 0xe6, 0xe3, 0x7d, 0xd9, 0xad, 0xde, 0xe4, 0x17, 0x3f, 0x03, 0x00, 0x00,
+	0xff, 0xff, 0x59, 0xf3, 0x3d, 0x3b, 0xde, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -315,8 +520,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ClientServiceClient interface {
-	CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*CreateClientResponse, error)
-	CreateScope(ctx context.Context, in *CreateScopeRequest, opts ...grpc.CallOption) (*CreateScopeResponse, error)
+	UpsertClient(ctx context.Context, in *UpsertClientRequest, opts ...grpc.CallOption) (*UpsertClientResponse, error)
+	DeleteClient(ctx context.Context, in *DeleteClientRequest, opts ...grpc.CallOption) (*DeleteClientResponse, error)
+	UpsertScope(ctx context.Context, in *UpsertScopeRequest, opts ...grpc.CallOption) (*UpsertScopeResponse, error)
+	DeleteScope(ctx context.Context, in *DeleteScopeRequest, opts ...grpc.CallOption) (*DeleteClientResponse, error)
 }
 
 type clientServiceClient struct {
@@ -327,18 +534,36 @@ func NewClientServiceClient(cc *grpc.ClientConn) ClientServiceClient {
 	return &clientServiceClient{cc}
 }
 
-func (c *clientServiceClient) CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*CreateClientResponse, error) {
-	out := new(CreateClientResponse)
-	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/CreateClient", in, out, opts...)
+func (c *clientServiceClient) UpsertClient(ctx context.Context, in *UpsertClientRequest, opts ...grpc.CallOption) (*UpsertClientResponse, error) {
+	out := new(UpsertClientResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/UpsertClient", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clientServiceClient) CreateScope(ctx context.Context, in *CreateScopeRequest, opts ...grpc.CallOption) (*CreateScopeResponse, error) {
-	out := new(CreateScopeResponse)
-	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/CreateScope", in, out, opts...)
+func (c *clientServiceClient) DeleteClient(ctx context.Context, in *DeleteClientRequest, opts ...grpc.CallOption) (*DeleteClientResponse, error) {
+	out := new(DeleteClientResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/DeleteClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServiceClient) UpsertScope(ctx context.Context, in *UpsertScopeRequest, opts ...grpc.CallOption) (*UpsertScopeResponse, error) {
+	out := new(UpsertScopeResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/UpsertScope", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServiceClient) DeleteScope(ctx context.Context, in *DeleteScopeRequest, opts ...grpc.CallOption) (*DeleteClientResponse, error) {
+	out := new(DeleteClientResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ClientService/DeleteScope", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -347,57 +572,101 @@ func (c *clientServiceClient) CreateScope(ctx context.Context, in *CreateScopeRe
 
 // ClientServiceServer is the server API for ClientService service.
 type ClientServiceServer interface {
-	CreateClient(context.Context, *CreateClientRequest) (*CreateClientResponse, error)
-	CreateScope(context.Context, *CreateScopeRequest) (*CreateScopeResponse, error)
+	UpsertClient(context.Context, *UpsertClientRequest) (*UpsertClientResponse, error)
+	DeleteClient(context.Context, *DeleteClientRequest) (*DeleteClientResponse, error)
+	UpsertScope(context.Context, *UpsertScopeRequest) (*UpsertScopeResponse, error)
+	DeleteScope(context.Context, *DeleteScopeRequest) (*DeleteClientResponse, error)
 }
 
 // UnimplementedClientServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedClientServiceServer struct {
 }
 
-func (*UnimplementedClientServiceServer) CreateClient(ctx context.Context, req *CreateClientRequest) (*CreateClientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClient not implemented")
+func (*UnimplementedClientServiceServer) UpsertClient(ctx context.Context, req *UpsertClientRequest) (*UpsertClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertClient not implemented")
 }
-func (*UnimplementedClientServiceServer) CreateScope(ctx context.Context, req *CreateScopeRequest) (*CreateScopeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateScope not implemented")
+func (*UnimplementedClientServiceServer) DeleteClient(ctx context.Context, req *DeleteClientRequest) (*DeleteClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteClient not implemented")
+}
+func (*UnimplementedClientServiceServer) UpsertScope(ctx context.Context, req *UpsertScopeRequest) (*UpsertScopeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertScope not implemented")
+}
+func (*UnimplementedClientServiceServer) DeleteScope(ctx context.Context, req *DeleteScopeRequest) (*DeleteClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteScope not implemented")
 }
 
 func RegisterClientServiceServer(s *grpc.Server, srv ClientServiceServer) {
 	s.RegisterService(&_ClientService_serviceDesc, srv)
 }
 
-func _ClientService_CreateClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateClientRequest)
+func _ClientService_UpsertClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertClientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientServiceServer).CreateClient(ctx, in)
+		return srv.(ClientServiceServer).UpsertClient(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sso.manager.ClientService/CreateClient",
+		FullMethod: "/sso.manager.ClientService/UpsertClient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientServiceServer).CreateClient(ctx, req.(*CreateClientRequest))
+		return srv.(ClientServiceServer).UpsertClient(ctx, req.(*UpsertClientRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ClientService_CreateScope_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateScopeRequest)
+func _ClientService_DeleteClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteClientRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientServiceServer).CreateScope(ctx, in)
+		return srv.(ClientServiceServer).DeleteClient(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sso.manager.ClientService/CreateScope",
+		FullMethod: "/sso.manager.ClientService/DeleteClient",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientServiceServer).CreateScope(ctx, req.(*CreateScopeRequest))
+		return srv.(ClientServiceServer).DeleteClient(ctx, req.(*DeleteClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientService_UpsertScope_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertScopeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).UpsertScope(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.ClientService/UpsertScope",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).UpsertScope(ctx, req.(*UpsertScopeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientService_DeleteScope_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteScopeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).DeleteScope(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.ClientService/DeleteScope",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).DeleteScope(ctx, req.(*DeleteScopeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -407,12 +676,20 @@ var _ClientService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*ClientServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateClient",
-			Handler:    _ClientService_CreateClient_Handler,
+			MethodName: "UpsertClient",
+			Handler:    _ClientService_UpsertClient_Handler,
 		},
 		{
-			MethodName: "CreateScope",
-			Handler:    _ClientService_CreateScope_Handler,
+			MethodName: "DeleteClient",
+			Handler:    _ClientService_DeleteClient_Handler,
+		},
+		{
+			MethodName: "UpsertScope",
+			Handler:    _ClientService_UpsertScope_Handler,
+		},
+		{
+			MethodName: "DeleteScope",
+			Handler:    _ClientService_DeleteScope_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

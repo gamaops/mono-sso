@@ -30,7 +30,7 @@ func ExchangeHandler(
 	w.Header().Set("Content-Type", "application/json")
 	dataForm := session.NewOAuth2DataForm(r)
 
-	if len(dataForm.ClientID) != 24 || dataForm.GrantType != "authorization_code" || len(dataForm.Code) != 40 || len(dataForm.RedirectURI) < 8 {
+	if len(dataForm.ClientID) != 28 || dataForm.GrantType != "authorization_code" || len(dataForm.Code) != 40 || len(dataForm.RedirectURI) < 8 {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(constants.InvalidExchangeResponse)
 		return
@@ -173,7 +173,7 @@ func RefreshTokenHandler(
 	w.Header().Set("Content-Type", "application/json")
 	dataForm := session.NewOAuth2DataForm(r)
 
-	if len(dataForm.ClientID) != 24 || dataForm.GrantType != "refresh_token" || len(dataForm.RefreshToken) == 0 {
+	if len(dataForm.ClientID) != 28 || dataForm.GrantType != "refresh_token" || len(dataForm.RefreshToken) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(constants.InvalidRefreshResponse)
 		return
@@ -193,6 +193,7 @@ func RefreshTokenHandler(
 		ForceNew:     false,
 		ClientSecret: dataForm.ClientSecret,
 		ClientId:     dataForm.ClientID,
+		Scopes:       strings.Fields(claims.Scope),
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), httpServer.Options.RequestDeadline)

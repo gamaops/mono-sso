@@ -19,7 +19,6 @@ import (
 	"github.com/gamaops/mono-sso/pkg/oauth2"
 	"github.com/gamaops/mono-sso/pkg/session"
 	"github.com/golang/protobuf/proto"
-	"github.com/rs/xid"
 	"github.com/square/go-jose/v3/jwt"
 )
 
@@ -150,7 +149,14 @@ func AuthorizationHandler(
 		if len(authCliRes.UnauthorizedScopes) > 0 {
 			replacers.Scopes = query.Scopes
 			replacers.ClientName = authCliRes.ClientName
-			replacers.GrantNonce = xid.New().String()
+			grantNonce, err := nonceGenerator.New()
+			if err != nil {
+				httpServer.Logger.Errorf("Error when generating grant nonce: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write(constants.InternalErrorResponse)
+				return false
+			}
+			replacers.GrantNonce = grantNonce.Base32()
 
 			redisSessID.WriteString(":grt:")
 			redisSessID.WriteString(replacers.GrantNonce)

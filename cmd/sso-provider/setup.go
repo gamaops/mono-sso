@@ -197,6 +197,12 @@ func setup() {
 		Logger: log,
 	}
 
+	err = handlers.SetupIDGenerators()
+
+	if err != nil {
+		log.Fatalf("Error setting up ID generators: %v", err)
+	}
+
 	httpCors := cors.New(cors.Options{
 		AllowedOrigins:   viper.GetStringSlice("allowedOrigins"),
 		AllowCredentials: true,

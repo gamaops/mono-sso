@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gamaops/mono-sso/pkg/datastore"
 	sso "github.com/gamaops/mono-sso/pkg/idl/sso-service"
 )
 
@@ -26,7 +27,7 @@ func newActivationCode(userAgent []byte) (string, string) {
 	return code, hashActivationCode([]byte(code), userAgent)
 }
 
-func generateActivationCode(ctx context.Context, acc *AccountEntity, signInReq *sso.SignInRequest) error {
+func generateActivationCode(ctx context.Context, acc *datastore.AccountDoc, signInReq *sso.SignInRequest) error {
 
 	if acc.ActivationMethod == sso.ActivationMethod_NONE {
 		return nil
@@ -38,9 +39,9 @@ func generateActivationCode(ctx context.Context, acc *AccountEntity, signInReq *
 	}
 
 	code, hash := newActivationCode([]byte(signInReq.UserAgent))
-	subject := acc.ID.Hex()
+	subject := acc.ID
 
-	err := ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 		Level:       sso.EventLevel_INFO,
 		IsSensitive: true,
 		Message:     fmt.Sprintf("new activation code (MFA enabled): %v", subject),
@@ -53,11 +54,6 @@ func generateActivationCode(ctx context.Context, acc *AccountEntity, signInReq *
 			"duration":          signInReq.ActivationCodeDuration,
 		},
 	})
-
-	if err != nil {
-		log.Errorf("Error when inserting event: %v", err)
-		return err
-	}
 
 	expiration, err := time.ParseDuration(signInReq.ActivationCodeDuration)
 
@@ -104,7 +100,7 @@ func validateActivationCode(ctx context.Context, actReq *sso.ActivateSessionRequ
 
 	if err != nil {
 		log.Warnf("Error when getting result from activation code validation: %v", err)
-		err = ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+		ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 			Level:       sso.EventLevel_WARNING,
 			IsSensitive: false,
 			Message:     fmt.Sprintf("failed to activate session (invalid code/user agent/session): %v", subject),
@@ -114,11 +110,11 @@ func validateActivationCode(ctx context.Context, actReq *sso.ActivateSessionRequ
 				"session_id": actReq.SessionId,
 			},
 		})
-		return false, err
+		return false, nil
 	}
 
 	if subject != actReq.Subject {
-		err = ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+		ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 			Level:       sso.EventLevel_WARNING,
 			IsSensitive: false,
 			Message:     fmt.Sprintf("failed to activate session (invalid subject): %v", subject),
@@ -128,10 +124,10 @@ func validateActivationCode(ctx context.Context, actReq *sso.ActivateSessionRequ
 				"session_id": actReq.SessionId,
 			},
 		})
-		return false, err
+		return false, nil
 	}
 
-	err = ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 		Level:       sso.EventLevel_INFO,
 		IsSensitive: true,
 		Message:     fmt.Sprintf("session activated: %v", subject),
@@ -143,6 +139,6 @@ func validateActivationCode(ctx context.Context, actReq *sso.ActivateSessionRequ
 		},
 	})
 
-	return true, err
+	return true, nil
 
 }

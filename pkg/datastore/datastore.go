@@ -2,123 +2,62 @@ package datastore
 
 import (
 	"context"
+	"database/sql"
+	"strconv"
+	"strings"
 
+	"errors"
+
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"gopkg.in/go-playground/validator.v9"
 )
 
-type Options struct {
-	MongoDBURI    string
-	MongoDatabase string
-}
+var ErrVersionMismatch = errors.New("version mismatch")
 
-type MongoCollections struct {
-	Accounts *mongo.Collection
-	Events   *mongo.Collection
-	Grants   *mongo.Collection
-	Scopes   *mongo.Collection
-	Tokens   *mongo.Collection
-	Clients  *mongo.Collection
+type Options struct {
+	PostgresURI    string
+	MaxConnections int
+	Validator      *validator.Validate
 }
 
 type Datastore struct {
-	Options     *Options
-	Client      *mongo.Client
-	Database    *mongo.Database
-	Collections *MongoCollections
-	Logger      *logrus.Logger
+	Options *Options
+	Client  *sql.DB
+	Logger  *logrus.Logger
 }
 
 func StartDatastore(ctx context.Context, datastore *Datastore) error {
-	datastore.Logger.Info("Connecting to MongoDB")
-	datastore.Collections = &MongoCollections{}
-	client, err := mongo.NewClient(options.Client().ApplyURI(datastore.Options.MongoDBURI))
+	datastore.Logger.Info("Connecting to Postgres")
+	db, err := sql.Open("postgres", datastore.Options.PostgresURI)
 	if err != nil {
 		return err
 	}
 
-	datastore.Client = client
-	err = client.Connect(ctx)
-	if err != nil {
-		return err
-	}
+	db.SetMaxOpenConns(datastore.Options.MaxConnections)
 
-	database := client.Database(datastore.Options.MongoDatabase)
-
-	datastore.Database = database
-
-	datastore.Collections.Accounts = database.Collection("accounts")
-	datastore.Collections.Events = database.Collection("events")
-	datastore.Collections.Scopes = database.Collection("scopes")
-	datastore.Collections.Grants = database.Collection("grants")
-	datastore.Collections.Tokens = database.Collection("tokens")
-	datastore.Collections.Clients = database.Collection("clients")
-
-	return ensureIndexes(ctx, datastore)
-}
-
-func ensureIndexes(ctx context.Context, datastore *Datastore) error {
-	datastore.Logger.Info("Ensuring MongoDB indexes")
-
-	optsID := options.Index().SetName("unq_identifier").SetUnique(true)
-
-	idxs := []mongo.IndexModel{
-		mongo.IndexModel{
-			Keys:    bson.M{"identifier": 1},
-			Options: optsID,
-		},
-	}
-
-	datastore.Collections.Accounts.Indexes().CreateMany(ctx, idxs)
-
-	optsID = options.Index().SetName("unq_scopes").SetUnique(true)
-
-	idxs = []mongo.IndexModel{
-		mongo.IndexModel{
-			Keys:    bson.M{"scope": 1, "client_id": 1},
-			Options: optsID,
-		},
-	}
-
-	datastore.Collections.Scopes.Indexes().CreateMany(ctx, idxs)
-
-	optsID = options.Index().SetName("unq_grants").SetUnique(true)
-
-	idxs = []mongo.IndexModel{
-		mongo.IndexModel{
-			Keys:    bson.M{"client_id": 1, "subject": 1},
-			Options: optsID,
-		},
-	}
-
-	datastore.Collections.Grants.Indexes().CreateMany(ctx, idxs)
-
-	optsID = options.Index().SetName("unq_refresh_tokens").SetUnique(true).SetPartialFilterExpression(bson.M{
-		"type": bson.M{
-			"$eq": 0,
-		},
-		"enabled": bson.M{
-			"$eq": true,
-		},
-	})
-
-	idxs = []mongo.IndexModel{
-		mongo.IndexModel{
-			Keys:    bson.M{"client_id": 1, "subject": 1},
-			Options: optsID,
-		},
-	}
-
-	datastore.Collections.Tokens.Indexes().CreateMany(ctx, idxs)
+	datastore.Client = db
 
 	return nil
 }
 
 func StopDataStore(ctx context.Context, datastore *Datastore) {
-	datastore.Logger.Warn("Disconnecting from MongoDB")
-	if err := datastore.Client.Disconnect(ctx); err != nil {
-		datastore.Logger.Errorf("Error while disconnecting from MongoDB: %v", err)
+	datastore.Logger.Warn("Disconnecting from Postgres")
+	if err := datastore.Client.Close(); err != nil {
+		datastore.Logger.Errorf("Error while disconnecting from Postgres: %v", err)
 	}
+}
+
+func CreatePlaceholders(start int, count int, builder *strings.Builder) *strings.Builder {
+	if builder == nil {
+		builder = &strings.Builder{}
+	}
+	for i := 1; i <= count; i++ {
+		if i > 1 {
+			builder.WriteRune(',')
+		}
+		builder.WriteRune('$')
+		builder.WriteString(strconv.FormatInt(int64(i+start), 10))
+	}
+	return builder
 }

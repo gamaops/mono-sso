@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
+	"database/sql"
+
+	"github.com/gamaops/mono-sso/pkg/datastore"
 	ssomanager "github.com/gamaops/mono-sso/pkg/idl/sso-manager"
 	sso "github.com/gamaops/mono-sso/pkg/idl/sso-service"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AuthorizationServer struct {
@@ -23,64 +24,51 @@ func (s *AuthorizationServer) AuthorizeClient(ctx context.Context, req *sso.Auth
 
 	res := &sso.AuthorizeClientResponse{}
 
-	clientID, err := primitive.ObjectIDFromHex(req.ClientId)
-	if err != nil {
-		log.Errorf("Error when converting client ID to object ID: %v", err)
-		res.Status = InternalErrorStatus
-		return res, nil
-	}
-	subject, _ := primitive.ObjectIDFromHex(req.Subject)
-	if err != nil {
-		log.Errorf("Error when converting client ID to object ID: %v", err)
-		res.Status = InternalErrorStatus
-		return res, nil
-	}
-
 	if len(req.Scopes) > 0 {
-		diffUkn, err := getUnknownScopes(ctx, clientID, req.Scopes)
+		hasUkn, err := hasUnknownScopes(ctx, req.ClientId, req.Scopes)
 		if err != nil {
 			log.Errorf("Error when getting subject's unknown scopes: %v", err)
 			res.Status = InternalErrorStatus
 			return res, nil
 		}
 
-		if len(diffUkn.UnknownScopes) > 0 {
-			log.Warnf("Authorization request with unknown scopes: %v", diffUkn.UnknownScopes)
+		if hasUkn {
+			log.Warnf("Authorization request with unknown scopes: client_id %v scopes %v", req.ClientId, req.Scopes)
 			res.Status = UnknownScopesStatus
 			return res, nil
 		}
 	}
 
-	client, err := getAuthorizationClient(ctx, clientID, req.RedirectUri)
+	clientName, clientType, err := getAuthorizationClient(ctx, req.ClientId, req.RedirectUri)
 	if err != nil {
 		log.Errorf("Error when getting authorization to client: %v", err)
 		res.Status = InternalErrorStatus
 		return res, nil
 	}
 
-	if client == nil || len(client.Name) == 0 {
+	if len(clientName) == 0 {
 		log.Warnf("Invalid client or redirect uri: %v (%v)", req.ClientId, req.RedirectUri)
 		res.Status = InvalidClientStatus
 		return res, nil
 	}
 
-	if client.Type == ssomanager.ClientType_PUBLIC && req.ResponseType == "code" {
+	if clientType == ssomanager.ClientType_PUBLIC && req.ResponseType == "code" {
 		log.Warnf("Invalid response type for this type of client: %v (%v)", req.ClientId, req.RedirectUri)
 		res.Status = InvalidResponseTypeStatus
 		return res, nil
 	}
 
-	res.ClientName = client.Name
+	res.ClientName = clientName
 
-	diffUna, err := getUnauthorizedScopes(ctx, clientID, subject, req.Scopes)
+	unauthScopes, err := getUnauthorizedScopes(ctx, req.ClientId, req.Subject, req.Scopes)
 	if err != nil {
 		log.Errorf("Error when getting unauthorized scopes: %v", err)
 		res.Status = InternalErrorStatus
 		return res, nil
 	}
 
-	if len(diffUna.UnauthorizedScopes) > 0 {
-		res.UnauthorizedScopes = diffUna.UnauthorizedScopes
+	if len(unauthScopes) > 0 {
+		res.UnauthorizedScopes = unauthScopes
 	}
 
 	return res, nil
@@ -90,45 +78,81 @@ func (s *AuthorizationServer) GrantScopes(ctx context.Context, req *sso.GrantSco
 
 	res := &sso.GrantScopesResponse{}
 
-	clientID, err := primitive.ObjectIDFromHex(req.ClientId)
-	if err != nil {
-		log.Errorf("Error when converting client ID to object ID: %v", err)
-		res.Status = InternalErrorStatus
+	if len(req.Scopes) == 0 {
+		res.Status = InvalidGrantStatus
 		return res, nil
 	}
-	subject, err := primitive.ObjectIDFromHex(req.Subject)
+
+	scopes, err := getUnauthorizedScopes(ctx, req.ClientId, req.Subject, req.Scopes)
 	if err != nil {
-		log.Errorf("Error when converting client ID to object ID: %v", err)
+		log.Errorf("Error when getting unauthorized scopes: %v", err)
 		res.Status = InternalErrorStatus
 		return res, nil
 	}
 
-	_, err = ServiceDatastore.Collections.Grants.UpdateOne(ctx, bson.M{
-		"subject": bson.M{
-			"$eq": subject,
-		},
-		"client_id": bson.M{
-			"$eq": clientID,
-		},
-	}, bson.M{
-		"$addToSet": bson.M{
-			"scopes": bson.M{
-				"$each": req.Scopes,
-			},
-		},
-		"$set": bson.M{
-			"subject":   subject,
-			"client_id": clientID,
-		},
-	}, GrantUpdateOptions)
+	if len(scopes) == 0 || len(scopes) != len(req.Scopes) {
+		res.Status = InvalidGrantStatus
+		return res, nil
+	}
 
+	args := []interface{}{
+		req.ClientId,
+	}
+
+	for _, scope := range scopes {
+		args = append(args, scope)
+	}
+
+	result, err := ServiceDatastore.Client.QueryContext(
+		ctx,
+		`SELECT id FROM sso.scope WHERE client_id = $1 AND deleted_at IS NULL AND scope IN (`+datastore.CreatePlaceholders(1, len(scopes), nil).String()+`)`,
+		args...,
+	)
+	if err != nil {
+		log.Errorf("Error when getting scopes IDs: %v", err)
+		res.Status = InternalErrorStatus
+		return res, nil
+	}
+
+	args = []interface{}{
+		req.Subject,
+	}
+
+	// TODO: Update and remove deleted_at where scopes already granted once
+
+	query := &strings.Builder{}
+	query.WriteString("INSERT INTO sso.grant (account_id, scope_id, created_at, updated_at, deleted_at) VALUES ")
+
+	for result.Next() {
+		var scopeID string
+		if err := result.Scan(&scopeID); err != nil {
+			log.Errorf("Error when scanning scope ID: %v", err)
+			res.Status = InternalErrorStatus
+			return res, nil
+		}
+		args = append(args, scopeID)
+		if len(args) > 2 {
+			query.WriteRune(',')
+		}
+		query.WriteString("($1, $")
+		query.WriteString(strconv.FormatInt(int64(len(args)), 10))
+		query.WriteString(", now(), now(), null)")
+	}
+
+	query.WriteString(" ON CONFLICT ON CONSTRAINT unq_sso_grant_scope_id_account_id DO UPDATE SET deleted_at = null, updated_at = now()")
+
+	_, err = ServiceDatastore.Client.ExecContext(
+		ctx,
+		query.String(),
+		args...,
+	)
 	if err != nil {
 		log.Errorf("Error while granting scopes: %v", err)
 		res.Status = InternalErrorStatus
 		return res, nil
 	}
 
-	err = ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 		Level:       sso.EventLevel_INFO,
 		IsSensitive: true,
 		Message:     fmt.Sprintf("client requested grants (subject %v): %v", req.Subject, req.ClientId),
@@ -139,12 +163,6 @@ func (s *AuthorizationServer) GrantScopes(ctx context.Context, req *sso.GrantSco
 		},
 	})
 
-	if err != nil {
-		log.Errorf("Error when inserting event: %v", err)
-		res.Status = InternalErrorStatus
-		return res, nil
-	}
-
 	return res, nil
 }
 
@@ -152,15 +170,14 @@ func (s *AuthorizationServer) NewRefreshToken(ctx context.Context, req *sso.NewR
 
 	res := &sso.NewRefreshTokenResponse{}
 
-	clientID, _ := primitive.ObjectIDFromHex(req.ClientId)
+	result := ServiceDatastore.Client.QueryRowContext(
+		ctx,
+		`SELECT secret FROM sso.client WHERE deleted_at IS NULL AND id = $1`,
+		req.ClientId,
+	)
 
-	clientResult := ServiceDatastore.Collections.Clients.FindOne(ctx, bson.M{
-		"_id": bson.M{
-			"$eq": clientID,
-		},
-	}, FindClientRefreshTokenOpts)
-
-	err := clientResult.Err()
+	var clientSecret string
+	err := result.Scan(&clientSecret)
 
 	if err != nil {
 		log.Warnf("Invalid client ID to generate refresh token: %v", err)
@@ -168,15 +185,7 @@ func (s *AuthorizationServer) NewRefreshToken(ctx context.Context, req *sso.NewR
 		return res, nil
 	}
 
-	client := &ClientEntity{}
-	err = clientResult.Decode(client)
-	if err != nil {
-		log.Errorf("Error while decoding client for refresh token: %v", err)
-		res.Status = InternalErrorStatus
-		return res, nil
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(client.Secret), []byte(req.ClientSecret))
+	err = bcrypt.CompareHashAndPassword([]byte(clientSecret), []byte(req.ClientSecret))
 
 	if err != nil {
 		log.Warnf("Invalid client secret to generate refresh token: %v", err)
@@ -184,47 +193,39 @@ func (s *AuthorizationServer) NewRefreshToken(ctx context.Context, req *sso.NewR
 		return res, nil
 	}
 
-	subject, _ := primitive.ObjectIDFromHex(req.Subject)
+	unauthScopes, err := getUnauthorizedScopes(ctx, req.ClientId, req.Subject, req.Scopes)
+	if err != nil {
+		log.Errorf("Error when getting unauthorized scopes: %v", err)
+		res.Status = InternalErrorStatus
+		return res, nil
+	}
 
-	findQuery := bson.M{
-		"type": bson.M{
-			"$eq": RefreshToken,
-		},
-		"client_id": bson.M{
-			"$eq": clientID,
-		},
-		"subject": bson.M{
-			"$eq": subject,
-		},
-		"enabled": bson.M{
-			"$eq": true,
-		},
-		"expires_at": bson.M{
-			"$gt": time.Now(),
-		},
+	if len(unauthScopes) > 0 {
+		res.Status = UnauthorizedScopesStatus
+		return res, nil
 	}
 
 	if !req.ForceNew {
-		refreshTokenResult := ServiceDatastore.Collections.Tokens.FindOne(ctx, findQuery, FindRefreshTokenOpts)
+		result = ServiceDatastore.Client.QueryRowContext(
+			ctx,
+			`SELECT id, expires_at FROM sso.token WHERE account_id = $1 AND client_id = $2 AND type = 0 AND deleted_at IS NULL AND expires_at > now()`,
+			req.Subject,
+			req.ClientId,
+		)
 
-		err := refreshTokenResult.Err()
-		if err != mongo.ErrNoDocuments {
+		var tokenID string
+		var expiresAt time.Time
+
+		err := result.Scan(&tokenID, &expiresAt)
+		if err != sql.ErrNoRows {
 			if err != nil {
 				log.Errorf("Error while getting current refresh token: %v", err)
 				res.Status = InternalErrorStatus
 				return res, nil
 			}
 
-			refreshToken := &RefreshTokenEntity{}
-			err = refreshTokenResult.Decode(refreshToken)
-			if err != nil {
-				log.Errorf("Error while decoding current refresh token: %v", err)
-				res.Status = InternalErrorStatus
-				return res, nil
-			}
-
-			res.RefreshTokenId = refreshToken.ID.Hex()
-			res.ExpiresAt = refreshToken.ExpiresAt.Unix()
+			res.RefreshTokenId = tokenID
+			res.ExpiresAt = expiresAt.Unix()
 			return res, nil
 		}
 
@@ -234,41 +235,66 @@ func (s *AuthorizationServer) NewRefreshToken(ctx context.Context, req *sso.NewR
 		}
 	}
 
-	delete(findQuery, "expires_at")
-
-	ServiceDatastore.Collections.Tokens.UpdateMany(ctx, findQuery, bson.M{
-		"$set": bson.M{
-			"enabled": false,
-		},
-	})
-
-	tokenDuration, _ := time.ParseDuration(req.Duration)
-	expiresAt := time.Now().Add(tokenDuration)
-	sessionID, _ := primitive.ObjectIDFromHex(req.SessionId)
-
-	res.ExpiresAt = expiresAt.Unix()
-
-	newRefreshToken, err := ServiceDatastore.Collections.Tokens.InsertOne(ctx, bson.M{
-		"type":               RefreshToken,
-		"client_id":          clientID,
-		"subject":            subject,
-		"session_id":         sessionID,
-		"redirect_uri":       req.RedirectUri,
-		"authorization_code": req.AuthorizationCode,
-		"enabled":            true,
-		"created_at":         time.Now(),
-		"expires_at":         expiresAt,
-	})
-
+	tx, err := ServiceDatastore.Client.BeginTx(ctx, nil)
 	if err != nil {
-		log.Errorf("Error while inserting new refresh token: %v", err)
+		log.Errorf("Error when starting transaction: %v", err)
+		res.Status = InternalErrorStatus
+		return res, nil
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("UPDATE sso.token SET deleted_at = now() WHERE account_id = $1 AND client_id = $2 AND type = 0", req.Subject, req.ClientId)
+	if err != nil {
+		log.Errorf("Error when invalidating previous refresh tokens: %v", err)
 		res.Status = InternalErrorStatus
 		return res, nil
 	}
 
-	refreshTokenID := newRefreshToken.InsertedID.(primitive.ObjectID)
+	tokenID, err := tokenIDGenerator.New()
+	if err != nil {
+		log.Errorf("Error when generating refresh token ID: %v", err)
+		res.Status = InternalErrorStatus
+		return res, nil
+	}
 
-	res.RefreshTokenId = refreshTokenID.Hex()
+	tokenIDStr := tokenID.Base32()
+	tokenDuration, _ := time.ParseDuration(req.Duration)
+	expiresAt := time.Now().Add(tokenDuration)
+
+	tx.Exec(
+		`INSERT INTO sso.token (id, account_id, client_id, type, expires_at, created_at, updated_at, deleted_at)
+		VALUES ($1, $2, $3, 0, $4, now(), now(), null)`,
+		tokenIDStr,
+		req.Subject,
+		req.ClientId,
+		expiresAt,
+	)
+
+	err = tx.Commit()
+	if err != nil {
+		log.Errorf("Error when committing transaction to create new refresh token: %v", err)
+		res.Status = InternalErrorStatus
+		return res, nil
+	}
+
+	res.ExpiresAt = expiresAt.Unix()
+
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
+		Level:       sso.EventLevel_INFO,
+		IsSensitive: true,
+		Message:     fmt.Sprintf("generated new refresh token for account %v and client %v", req.Subject, req.ClientId),
+		Data: map[string]string{
+			"type":               "0",
+			"client_id":          req.ClientId,
+			"subject":            req.Subject,
+			"session_id":         req.SessionId,
+			"redirect_uri":       req.RedirectUri,
+			"authorization_code": req.AuthorizationCode,
+			"expires_at":         expiresAt.Format(time.RFC3339),
+		},
+	})
+
+	res.RefreshTokenId = tokenIDStr
 
 	return res, nil
 

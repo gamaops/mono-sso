@@ -5,13 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gamaops/mono-sso/pkg/datastore"
 	sso "github.com/gamaops/mono-sso/pkg/idl/sso-service"
-	"github.com/rs/xid"
-	logrus "github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type AccountServer struct {
@@ -19,28 +15,29 @@ type AccountServer struct {
 }
 
 func (s *AccountServer) SignIn(ctx context.Context, req *sso.SignInRequest) (*sso.SignInResponse, error) {
-	filter := bson.M{
-		"identifier": req.Identifier,
-		"enabled":    true,
-	}
-	result := ServiceDatastore.Collections.Accounts.FindOne(ctx, filter, SignInFindOpts)
-	err := result.Err()
+	result := ServiceDatastore.Client.QueryRowContext(
+		ctx,
+		`SELECT acc.id, acc.name, acc.activation_method, acc.password
+		FROM sso.account AS acc
+		INNER JOIN sso.account_identifier AS acc_id ON (acc_id.account_id = acc.id AND acc_id.identifier = $1)
+		WHERE acc.deleted_at IS NULL`,
+		req.Identifier,
+	)
+
+	acc := &datastore.AccountDoc{}
+
+	err := result.Scan(
+		&acc.ID,
+		&acc.Name,
+		&acc.ActivationMethod,
+		&acc.Password,
+	)
 
 	res := &sso.SignInResponse{}
 	if err != nil {
 		log.Debugf("Invalid account identifier/password: %v", err)
 		res.Status = SignInInvalidAccountStatus
 		return res, nil
-	}
-
-	acc := &AccountEntity{}
-	err = result.Decode(acc)
-	if err != nil {
-		errid := xid.New().String()
-		log.WithFields(logrus.Fields{
-			"errid": errid,
-		}).Errorf("Error while decoding entity from MongoDB: %v", err)
-		return nil, status.Errorf(codes.Internal, "Internal error: %v", errid)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(acc.Password), []byte(req.Password))
@@ -52,12 +49,12 @@ func (s *AccountServer) SignIn(ctx context.Context, req *sso.SignInRequest) (*ss
 	}
 
 	res.ActivationMethod = acc.ActivationMethod
-	res.Subject = acc.ID.Hex()
+	res.Subject = acc.ID
 	res.Profile = &sso.AccountProfile{
 		Name: acc.Name,
 	}
 
-	ServiceDatastore.InsertEvent(ctx, &sso.RegisterEventRequest{
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
 		Level:       sso.EventLevel_INFO,
 		IsSensitive: true,
 		Message:     fmt.Sprintf("account signed in (%v): %v", res.Subject, req.Identifier),
@@ -102,12 +99,7 @@ func (s *AccountServer) RegisterEvent(ctx context.Context, req *sso.RegisterEven
 
 	res := &sso.RegisterEventResponse{}
 
-	err := ServiceDatastore.InsertEvent(ctx, req)
-
-	if err != nil {
-		log.Errorf("Error when inserting event: %v", err)
-		res.Status = InternalErrorStatus
-	}
+	ServiceDatastore.RegisterEvent(req)
 
 	return res, nil
 }

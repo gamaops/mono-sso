@@ -14,4 +14,7 @@ message ResponseStatus {
 
 message RequestSession {
 	string access_token = 1;
+	string locale = 2;
+	// Validate if it's not in the future
+	int64 timestamp = 3;
 }

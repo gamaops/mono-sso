@@ -25,20 +25,39 @@ message UpsertClientResponse {
 	string client_secret = 3;
 }
 
-message CreateScopeRequest {
+message DeleteClientRequest {
 	sso.common.RequestSession session = 1;
-	string scope_id = 1;
 	string client_id = 2;
-	string scope = 3;
-	map description = 4;
 }
 
-message CreateScopeResponse {
+message DeleteClientResponse {
 	sso.common.ResponseStatus status = 1;
-	string scope_id = 2;
+}
+
+message UpsertScopeRequest {
+	sso.common.RequestSession session = 1;
+	string client_id = 2;
+	string scope = 3;
+	string description = 4;
+}
+
+message UpsertScopeResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+message DeleteScopeRequest {
+	sso.common.RequestSession session = 1;
+	string client_id = 2;
+	string scope = 3;
+}
+
+message DeleteScopeResponse {
+	sso.common.ResponseStatus status = 1;
 }
 
 service ClientService {
 	rpc UpsertClient(UpsertClientRequest) returns (UpsertClientResponse);
-	rpc CreateScope(CreateScopeRequest) returns (CreateScopeResponse);
+	rpc DeleteClient(DeleteClientRequest) returns (DeleteClientResponse);
+	rpc UpsertScope(UpsertScopeRequest) returns (UpsertScopeResponse);
+	rpc DeleteScope(DeleteScopeRequest) returns (DeleteClientResponse);
 }

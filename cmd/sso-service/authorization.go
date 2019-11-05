@@ -2,142 +2,108 @@ package main
 
 import (
 	"context"
-	"io"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/gamaops/mono-sso/pkg/datastore"
+	ssomanager "github.com/gamaops/mono-sso/pkg/idl/sso-manager"
 )
 
-func getUnauthorizedScopes(ctx context.Context, clientID primitive.ObjectID, subject primitive.ObjectID, scopes []string) (*GrantScopesDifference, error) {
-	query := bson.A{
-		bson.M{
-			"$match": bson.M{
-				"client_id": bson.M{
-					"$eq": clientID,
-				},
-				"subject": bson.M{
-					"$eq": subject,
-				},
-			},
-		},
-		bson.M{
-			"$project": bson.M{
-				"unauthorized_scopes": bson.M{
-					"$setDifference": bson.A{
-						scopes,
-						"$scopes",
-					},
-				},
-			},
-		},
-	}
-	cursor, err := ServiceDatastore.Collections.Grants.Aggregate(ctx, query)
+func getUnauthorizedScopes(ctx context.Context, clientID string, subject string, scopes []string) ([]string, error) {
 
+	stmt, err := ServiceDatastore.Client.PrepareContext(
+		ctx,
+		`SELECT rscope
+		FROM unnest(ARRAY[`+datastore.CreatePlaceholders(2, len(scopes), nil).String()+`]) rscope
+		INNER JOIN sso.scope AS sco ON (sco.scope = rscope AND sco.client_id = $1 AND sco.deleted_at IS NULL)
+		LEFT JOIN sso.grant AS grt ON (grt.scope_id = sco.id AND grt.account_id = $2 AND grt.deleted_at IS NULL)
+		WHERE grt.created_at IS NULL`,
+	)
 	if err != nil {
-		log.Errorf("Error while getting scopes difference on grants: %v", err)
+		log.Errorf("Error while preparing statement: %v", err)
 		return nil, err
 	}
+	defer stmt.Close()
 
-	diff := &GrantScopesDifference{}
-	more := cursor.Next(ctx)
-	err = cursor.Decode(diff)
-	cursor.Close(ctx)
-
-	if !more {
-		diff.UnauthorizedScopes = scopes
-	} else if err != nil && err == io.EOF {
-		log.Errorf("Error while decoding scopes difference on grants: %v", err)
-		return nil, err
+	args := []interface{}{
+		clientID,
+		subject,
+	}
+	for _, scope := range scopes {
+		args = append(args, scope)
 	}
 
-	return diff, nil
+	result, err := stmt.Query(args...)
+	if err != nil {
+		log.Errorf("Error while executing prepared statement: %v", err)
+		return nil, err
+	}
+	defer result.Close()
+
+	unauthorizedScopes := make([]string, 0)
+
+	for result.Next() {
+		var scope string
+		if err := result.Scan(&scope); err != nil {
+			return nil, err
+		}
+		unauthorizedScopes = append(unauthorizedScopes, scope)
+	}
+
+	return unauthorizedScopes, nil
 
 }
 
-func getUnknownScopes(ctx context.Context, clientID primitive.ObjectID, scopes []string) (*UnknownScopesDifference, error) {
-	query := bson.A{
-		bson.M{
-			"$match": bson.M{
-				"client_id": bson.M{
-					"$eq": clientID,
-				},
-				"scope": bson.M{
-					"$in": scopes,
-				},
-			},
-		},
-		bson.M{
-			"$group": bson.M{
-				"_id": nil,
-				"found_scopes": bson.M{
-					"$addToSet": "$scope",
-				},
-			},
-		},
-		bson.M{
-			"$project": bson.M{
-				"unknown_scopes": bson.M{
-					"$setDifference": bson.A{
-						scopes,
-						"$found_scopes",
-					},
-				},
-			},
-		},
+func hasUnknownScopes(ctx context.Context, clientID string, scopes []string) (bool, error) {
+
+	stmt, err := ServiceDatastore.Client.PrepareContext(
+		ctx,
+		"SELECT COUNT(1) FROM sso.scope WHERE client_id = $1 AND scope IN ("+datastore.CreatePlaceholders(1, len(scopes), nil).String()+") AND deleted_at IS NULL",
+	)
+	if err != nil {
+		return false, err
 	}
-	cursor, err := ServiceDatastore.Collections.Scopes.Aggregate(ctx, query)
+	defer stmt.Close()
+	args := []interface{}{
+		clientID,
+	}
+	for _, scope := range scopes {
+		args = append(args, scope)
+	}
+	result := stmt.QueryRow(args...)
+
+	var count int = 0
+
+	err = result.Scan(&count)
 
 	if err != nil {
 		log.Errorf("Error while getting unknown scopes: %v", err)
-		return nil, err
+		return false, err
 	}
 
-	diff := &UnknownScopesDifference{}
-	more := cursor.Next(ctx)
-	err = cursor.Decode(diff)
-	cursor.Close(ctx)
-
-	if !more {
-		diff.UnknownScopes = scopes
-	} else if err != nil && err != io.EOF {
-		log.Errorf("Error while decoding unknown scopes: %v", err)
-		return nil, err
+	if count != len(scopes) {
+		return true, err
 	}
 
-	return diff, nil
+	return false, nil
 
 }
 
-func getAuthorizationClient(ctx context.Context, clientID primitive.ObjectID, redirectUri string) (*ClientEntity, error) {
-	query := bson.M{
-		"_id": bson.M{
-			"$eq": clientID,
-		},
-		"redirect_uris": bson.M{
-			"$eq": redirectUri,
-		},
-	}
+func getAuthorizationClient(ctx context.Context, clientID string, redirectURI string) (string, ssomanager.ClientType, error) {
 
-	result := ServiceDatastore.Collections.Clients.FindOne(ctx, query, ClientAuthorizationOpts)
+	result := ServiceDatastore.Client.QueryRow(
+		`SELECT name, type FROM sso.client WHERE id = $1 AND $2 = ANY(redirect_uris) AND deleted_at IS NULL`,
+		clientID,
+		redirectURI,
+	)
 
-	err := result.Err()
-
-	// TODO: Handle "mongo: no documents in result"
-	if err != nil || err == mongo.ErrNoDocuments {
-		log.Warnf("Error while getting authorization client from MongoDB: %v", err)
-		return nil, err
-	}
-
-	client := &ClientEntity{}
-
-	err = result.Decode(client)
+	var clientName string
+	var clientType ssomanager.ClientType
+	err := result.Scan(&clientName, &clientType)
 
 	if err != nil {
-		log.Errorf("Error while decoding authorization client from MongoDB: %v", err)
-		return nil, err
+		log.Errorf("Error while getting authorization client query: %v", err)
+		return clientName, clientType, err
 	}
 
-	return client, nil
+	return clientName, clientType, nil
 
 }

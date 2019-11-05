@@ -17,7 +17,6 @@ import (
 	"github.com/gamaops/mono-sso/pkg/session"
 	"github.com/go-redis/redis"
 	"github.com/golang/protobuf/proto"
-	"github.com/rs/xid"
 )
 
 func IndexHandler(
@@ -71,7 +70,13 @@ func AuthenticateHandler(httpServer *httpserver.HTTPServer, model *session.Authe
 	sessCookie, err := r.Cookie(model.SessionCookieKey)
 	var sessID string
 	if err == http.ErrNoCookie {
-		sessID = xid.New().String()
+		sessIDSrc, err := sessionIDGenerator.New()
+		if err != nil {
+			model.Logger.Errorf("Error when generating session ID: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(constants.InternalErrorResponse)
+		}
+		sessID = sessIDSrc.Base32()
 	} else if err != nil {
 		model.Logger.Errorf("Error when getting session cookie: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -185,11 +190,18 @@ func AuthenticateHandler(httpServer *httpserver.HTTPServer, model *session.Authe
 
 		redisSessID.WriteString(":clg")
 
-		challenge := xid.New().String()
+		challenge, err := challengeGenerator.New()
+		if err != nil {
+			model.Logger.Errorf("Error when generating challenge: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write(constants.InternalErrorResponse)
+		}
+
+		challengeStr := challenge.Base32()
 
 		challengeHash := sha1.New()
 		challengeHash.Write([]byte(signInReq.UserAgent))
-		challengeHash.Write([]byte(challenge))
+		challengeHash.Write([]byte(challengeStr))
 
 		err = chc.Client.Set(redisSessID.String(), hex.EncodeToString(challengeHash.Sum(nil)), model.Options.MFASessionDuration).Err()
 		if err != nil {
@@ -199,7 +211,7 @@ func AuthenticateHandler(httpServer *httpserver.HTTPServer, model *session.Authe
 			return
 		}
 
-		authRes.Challenge = challenge
+		authRes.Challenge = challengeStr
 		// Only resets the session cache if it's the first authentication
 		if sessSub.ActivatedAt == 0 {
 			sessExp = model.Options.MFASessionDuration

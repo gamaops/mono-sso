@@ -69,7 +69,7 @@ func NewOAuth2DataForm(r *http.Request) *OAuth2DataForm {
 }
 
 func (q *OAuth2URLQuery) IsValidAuthorizationRequest() bool {
-	if len(q.SessionID) == 0 || len(q.SubjectID) != 24 || len(q.ClientID) != 24 || len(q.RedirectURI) <= 8 || !IsOAuth2ValidResponseType(q.ResponseType) {
+	if len(q.SessionID) == 0 || len(q.SubjectID) != 28 || len(q.ClientID) != 28 || len(q.RedirectURI) <= 8 || len(q.Scopes) == 0 || !IsOAuth2ValidResponseType(q.ResponseType) {
 		return false
 	}
 	return true

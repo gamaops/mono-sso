@@ -4,37 +4,40 @@ import (
 	"context"
 	stdlog "log"
 	"os"
+	"reflect"
+	"strings"
 	"time"
 
 	"math/rand"
 
-	"github.com/gamaops/gamago/pkg/id"
 	"github.com/gamaops/mono-sso/pkg/cache"
 	"github.com/gamaops/mono-sso/pkg/datastore"
 	"github.com/go-redis/redis"
 	logrus "github.com/sirupsen/logrus"
-
 	"github.com/spf13/viper"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 var log = logrus.New()
 var ServiceCache *cache.Cache
 var ServiceDatastore *datastore.Datastore
-var tokenIDGenerator *id.IDGenerator
 
 func setup() {
-
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 
 	// MongoDB information
-	viper.SetDefault("postgresUri", "")
-	viper.BindEnv("postgresUri", "SSO_POSTGRES_URI")
-	viper.SetDefault("postgresMaxConn", "5")
-	viper.BindEnv("postgresMaxConn", "SSO_POSTGRES_MAX_CONN")
+	viper.SetDefault("mongodbUri", "")
+	viper.BindEnv("mongodbUri", "SSO_MONGODB_URI")
+	viper.SetDefault("mongodbConnectTimeout", "15s")
+	viper.BindEnv("mongodbConnectTimeout", "SSO_MONGODB_CONNECT_TIMEOUT")
+	viper.SetDefault("mongodbDatabase", "sso")
+	viper.BindEnv("mongodbDatabase", "SSO_MONGODB_DATABASE")
+	viper.SetDefault("mongodbShutdownTimeout", "5s")
+	viper.BindEnv("mongodbShutdownTimeout", "SSO_MONGODB_SHUTDOWN_TIMEOUT")
 
 	// gRPC Server information
-	viper.SetDefault("grpcListen", "0.0.0.0:3231")
+	viper.SetDefault("grpcListen", "0.0.0.0:3232")
 	viper.BindEnv("grpcListen", "SSO_GRPC_LISTEN")
 	viper.SetDefault("grpcMaxKeepAlive", "2m")
 	viper.BindEnv("grpcMaxKeepAlive", "SSO_GRPC_KEEP_ALIVE")
@@ -62,13 +65,6 @@ func setup() {
 
 	log.SetOutput(os.Stdout)
 
-	var err error
-	tokenIDGenerator, err = id.NewIDGenerator(10)
-
-	if err != nil {
-		log.Fatalf("Error initializing ID generator: %v", err)
-	}
-
 	ServiceCache = &cache.Cache{
 		Options: &cache.Options{
 			Prefix:      viper.GetString("redisPrefix"),
@@ -91,15 +87,24 @@ func setup() {
 
 	ServiceDatastore = &datastore.Datastore{
 		Options: &datastore.Options{
-			PostgresURI:    viper.GetString("postgresUri"),
-			MaxConnections: viper.GetInt("postgresMaxConn"),
+			MongoDBURI:    viper.GetString("mongodbUri"),
+			MongoDatabase: viper.GetString("mongodbDatabase"),
+			Validator:     validator.New(),
 		},
 		Logger: log,
 	}
 
+	ServiceDatastore.Options.Validator.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
 	ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration("mongodbConnectTimeout"))
 	defer cancel()
-	err = datastore.StartDatastore(ctx, ServiceDatastore)
+	err := datastore.StartDatastore(ctx, ServiceDatastore)
 
 	if err != nil {
 		log.Fatalf("Error starting datastore: %v", err)
