@@ -1,3 +1,12 @@
+## 2019-11-05T09:43:30.938Z
+### 🔥 - removing code or file(s) (project)
+
+#### none
+
+- Remove sso.session table
+
+-----------------------------
+
 ## 2019-11-05T09:41:48.209Z
 ### 📝 - writing docs (project)
 
