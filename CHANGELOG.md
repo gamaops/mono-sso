@@ -1,3 +1,12 @@
+## 2019-11-05T09:56:02.074Z
+### 🆕 - add code or file(s) (project)
+
+#### none
+
+- Enhance event data parsing
+
+-----------------------------
+
 ## 2019-11-05T09:43:30.938Z
 ### 🔥 - removing code or file(s) (project)
 
