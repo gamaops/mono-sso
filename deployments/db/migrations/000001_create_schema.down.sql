@@ -1,3 +1,4 @@
+DROP SEQUENCE IF EXISTS sso.setup_admin;
 
 ALTER TABLE sso.token DROP CONSTRAINT pk_sso_token;
 ALTER TABLE sso.token DROP CONSTRAINT pk_sso_token_id;
@@ -22,13 +23,22 @@ DROP INDEX IF EXISTS idx_sso_scope_scope;
 ALTER TABLE sso.client DROP CONSTRAINT pk_sso_client;
 ALTER TABLE sso.client DROP CONSTRAINT unq_sso_client_id;
 
+ALTER TABLE sso.account_tenant DROP CONSTRAINT unq_sso_account_tenant;
+ALTER TABLE sso.account_tenant DROP CONSTRAINT fk_sso_account_tenant_account_id;
+ALTER TABLE sso.account_tenant DROP CONSTRAINT fk_sso_account_tenant_tenant_id;
+
 ALTER TABLE sso.account_identifier DROP CONSTRAINT unq_sso_account_identifier_identifier;
 ALTER TABLE sso.account_identifier DROP CONSTRAINT fk_sso_account_identifier_account;
 
 ALTER TABLE sso.account DROP CONSTRAINT pk_sso_account;
 ALTER TABLE sso.account DROP CONSTRAINT unq_sso_account_id;
 
+ALTER TABLE sso.tenant DROP CONSTRAINT pk_sso_tenant;
+ALTER TABLE sso.tenant DROP CONSTRAINT unq_sso_tenant_id;
+
+DROP TABLE IF EXISTS sso.tenant;
 DROP TABLE IF EXISTS sso.account;
+DROP TABLE IF EXISTS sso.account_tenant;
 DROP TABLE IF EXISTS sso.account_identifier;
 DROP TABLE IF EXISTS sso.client;
 DROP TABLE IF EXISTS sso.scope;

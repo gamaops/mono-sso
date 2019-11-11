@@ -119,6 +119,7 @@ func AuthorizationHandler(
 			Subject:      query.SubjectID,
 			ResponseType: query.ResponseType,
 			State:        query.State,
+			TenantId:     authnModel.Options.TenantID,
 		}
 
 		authCliRes, err := authzModel.Options.AuthorizationServiceClient.AuthorizeClient(ctx, authCliReq)
@@ -206,7 +207,7 @@ func AuthorizationHandler(
 
 		hashParameters.Add("code", authorizationCode)
 
-		authCodeID, err := chc.CreateID(":authc:", query.ClientID, ':', authorizationCode)
+		authCodeID, err := chc.CreateID(":authc:", authnModel.Options.TenantID, ':', query.ClientID, ':', authorizationCode)
 		if err != nil {
 			httpServer.Logger.Errorf("Error when generating authorization code cache ID: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -261,7 +262,8 @@ func AuthorizationHandler(
 				Expiry:    jwt.NewNumericDate(time.Now().Add(authzModel.Options.AccessTokenDuration)),
 				IssuedAt:  nowNumericDate,
 			},
-			Scope: query.Scopes,
+			Scope:  query.Scopes,
+			Tenant: authnModel.Options.TenantID,
 		}
 
 		tokenJWT := oauth2.GenerateJWT(oauth2jose, claims)
@@ -360,6 +362,7 @@ func GrantScopesHandler(
 		ClientId: authCliReq.ClientId,
 		Subject:  grantReq.Subject,
 		Scopes:   authCliReq.Scopes,
+		TenantId: authnModel.Options.TenantID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), httpServer.Options.RequestDeadline)

@@ -6,11 +6,14 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
+	"crypto/tls"
 	"crypto/x509"
 	"encoding/hex"
+	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"io/ioutil"
+	"net/http"
 
 	"github.com/sirupsen/logrus"
 	jose "github.com/square/go-jose/v3"
@@ -19,10 +22,16 @@ import (
 
 var ErrInvalidFingerprint error = errors.New("invalid key fingerprint")
 var ErrInvalidKeyType error = errors.New("invalid key type, must be RSA or EC")
+var ErrEmptyJWKS error = errors.New("JWKS is empty")
 
 type Options struct {
 	PrivateKeyPath     string
 	PrivateKeyPassword string
+	JWKSURL            string
+}
+
+type JWKS struct {
+	Keys []jose.JSONWebKey `json:"keys"`
 }
 
 type OAuth2Jose struct {
@@ -39,8 +48,9 @@ type OAuth2Jose struct {
 
 type TokenClaims struct {
 	*jwt.Claims
-	Scope string `json:"scope,omitempty"`
-	Kid   string `json:"kid,omitempty"`
+	Scope  string `json:"scope,omitempty"`
+	Kid    string `json:"kid,omitempty"`
+	Tenant string `json:"tenant,omitempty"`
 }
 
 func SetupOAuth2Jose(oauth2jose *OAuth2Jose) error {
@@ -174,4 +184,40 @@ func DecodeJWT(oauth2jose *OAuth2Jose, tokenStr string) (*TokenClaims, error) {
 
 	return claims, nil
 
+}
+
+func LoadOAuth2JoseFromURL(oauth2jose *OAuth2Jose) error {
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	defer client.CloseIdleConnections()
+
+	res, err := client.Get(oauth2jose.Options.JWKSURL)
+
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	jwks := new(JWKS)
+	err = json.Unmarshal(body, jwks)
+	if err != nil {
+		return err
+	}
+
+	if len(jwks.Keys) == 0 {
+		return ErrEmptyJWKS
+	}
+
+	oauth2jose.JWK = &jwks.Keys[0]
+	oauth2jose.Fingerprint = oauth2jose.JWK.KeyID
+
+	return nil
 }

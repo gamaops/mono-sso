@@ -20,8 +20,10 @@ func (s *AccountServer) SignIn(ctx context.Context, req *sso.SignInRequest) (*ss
 		`SELECT acc.id, acc.name, acc.activation_method, acc.password
 		FROM sso.account AS acc
 		INNER JOIN sso.account_identifier AS acc_id ON (acc_id.account_id = acc.id AND acc_id.identifier = $1)
+		INNER JOIN sso.account_tenant AS acc_ten ON (acc_ten.account_id = acc.id AND acc_ten.deleted_at IS NULL AND acc_ten.tenant_id = $2)
 		WHERE acc.deleted_at IS NULL`,
 		req.Identifier,
+		req.TenantId,
 	)
 
 	acc := &datastore.AccountDoc{}
@@ -100,6 +102,53 @@ func (s *AccountServer) RegisterEvent(ctx context.Context, req *sso.RegisterEven
 	res := &sso.RegisterEventResponse{}
 
 	ServiceDatastore.RegisterEvent(req)
+
+	return res, nil
+}
+
+func (s *AccountServer) RevokeScopes(ctx context.Context, req *sso.RevokeScopesRequest) (*sso.RevokeScopesResponse, error) {
+
+	res := &sso.RevokeScopesResponse{}
+
+	err := ServiceDatastore.RevokeScopes(ctx, req)
+	if err != nil {
+		log.Errorf("Error when revoking scopes: %v", err)
+		res.Status = InternalErrorStatus
+	}
+
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
+		Level:       sso.EventLevel_WARNING,
+		IsSensitive: true,
+		Message:     fmt.Sprintf("subject revoked scopes: %v", req.Subject),
+		Data: map[string]string{
+			"account_id": req.Subject,
+			"client_id":  req.ClientId,
+			"scopes":     strings.Join(req.Scopes, ", "),
+		},
+	})
+
+	return res, nil
+}
+
+func (s *AccountServer) RevokeToken(ctx context.Context, req *sso.RevokeTokenRequest) (*sso.RevokeTokenResponse, error) {
+
+	res := &sso.RevokeTokenResponse{}
+
+	err := ServiceDatastore.RevokeToken(ctx, req)
+	if err != nil {
+		log.Errorf("Error when revoking token: %v", err)
+		res.Status = InternalErrorStatus
+	}
+
+	ServiceDatastore.RegisterEvent(&sso.RegisterEventRequest{
+		Level:       sso.EventLevel_WARNING,
+		IsSensitive: true,
+		Message:     fmt.Sprintf("subject revoked token: %v", req.Subject),
+		Data: map[string]string{
+			"account_id": req.Subject,
+			"client_id":  req.ClientId,
+		},
+	})
 
 	return res, nil
 }

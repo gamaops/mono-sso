@@ -1,28 +1,37 @@
 package constants
 
 const (
-	InvalidAccountSlg      string = "INVALID_ACCOUNT"
-	InvalidActivationSlg   string = "INVALID_ACTIVATION"
-	UknownScopesSlg        string = "UNKNOWN_SCOPES"
-	UnauthorizedScopesSlg        string = "UNAUTHORIZED_SCOPES"
-	InvalidClientSlg       string = "INVALID_CLIENT"
-	InvalidResponseTypeSlg string = "INVALID_RESPONSE_TYPE"
-	NoValidRefreshTokenSlg string = "NO_VALID_REFRESH_TOKEN"
-	InternalErrorSlg       string = "INTERNAL_ERROR"
-	InvalidRequestSlg      string = "INVALID_REQUEST"
-	InvalidGrantSlg      string = "INVALID_GRANT"
+	InvalidAccountSlg        string = "INVALID_ACCOUNT"
+	InvalidActivationSlg     string = "INVALID_ACTIVATION"
+	UknownScopesSlg          string = "UNKNOWN_SCOPES"
+	UnauthorizedScopesSlg    string = "UNAUTHORIZED_SCOPES"
+	InvalidClientSlg         string = "INVALID_CLIENT"
+	InvalidResponseTypeSlg   string = "INVALID_RESPONSE_TYPE"
+	NoValidRefreshTokenSlg   string = "NO_VALID_REFRESH_TOKEN"
+	InternalErrorSlg         string = "INTERNAL_ERROR"
+	InvalidRequestSlg        string = "INVALID_REQUEST"
+	InvalidGrantSlg          string = "INVALID_GRANT"
+	NotFoundSlg              string = "NOT_FOUND"
+	VersionMismatchSlg       string = "VERSION_MISMATCH"
+	InvalidAudienceSlg       string = "INVALID_AUDIENCE"
+	InvalidRequestSessionSlg string = "INVALID_REQUEST_SESSION"
+	InvalidTimestampSlg      string = "INVALID_TIMESTAMP"
+	RequiredScopesSlg        string = "REQUIRED_SCOPES"
+	InvalidTokenSlg          string = "INVALID_TOKEN"
+	InvalidTenantSlg         string = "INVALID_TENANT"
 )
 
 const (
 	InvalidAccountMsg      string = "identifier and/or password invalid"
 	InvalidActivationMsg   string = "invalid activation request"
 	UknownScopesMsg        string = "there're unknown scopes in authorization request"
-	UnauthorizedScopesMsg        string = "there're unauthorized scopes in request"
+	UnauthorizedScopesMsg  string = "there're unauthorized scopes in request"
 	InvalidClientMsg       string = "invalid client id or redirect uri"
 	InvalidResponseTypeMsg string = "this response type is unsupported by this type of client"
 	NoValidRefreshTokenMsg string = "this client has no valid refresh token to this subject"
 	InternalErrorMsg       string = "internal server error"
-	InvalidGrantMsg       string = "invalid grant request"
+	InvalidGrantMsg        string = "invalid grant request"
+	InvalidTenantMsg       string = "the tenant for this request is invalid"
 )
 
 var InvalidRecaptchaResponse []byte = []byte(`{"status":{"errors":[{"slug":"INVALID_RECAPTCHA","message":"invalid recaptcha response"}]}}`)

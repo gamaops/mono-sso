@@ -8,6 +8,7 @@ import (
 
 	"errors"
 
+	"github.com/gamaops/gamago/pkg/id"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/go-playground/validator.v9"
@@ -22,9 +23,10 @@ type Options struct {
 }
 
 type Datastore struct {
-	Options *Options
-	Client  *sql.DB
-	Logger  *logrus.Logger
+	Options       *Options
+	Client        *sql.DB
+	Logger        *logrus.Logger
+	IDGenerator28 *id.IDGenerator
 }
 
 func StartDatastore(ctx context.Context, datastore *Datastore) error {
@@ -37,6 +39,11 @@ func StartDatastore(ctx context.Context, datastore *Datastore) error {
 	db.SetMaxOpenConns(datastore.Options.MaxConnections)
 
 	datastore.Client = db
+
+	datastore.IDGenerator28, err = id.NewIDGenerator(5)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

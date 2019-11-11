@@ -1,10 +1,26 @@
 CREATE SCHEMA IF NOT EXISTS sso AUTHORIZATION CURRENT_USER;
 
+CREATE TABLE IF NOT EXISTS sso.tenant(
+	id char(28) not null,
+	name text not null,
+	created_at timestamp with time zone not null,
+	updated_at timestamp with time zone not null,
+	deleted_at timestamp with time zone
+) WITHOUT OIDS;
+
 CREATE TABLE IF NOT EXISTS sso.account(
 	id char(28) not null,
 	name text not null,
 	activation_method smallint not null default 0,
 	password char(60),
+	created_at timestamp with time zone not null,
+	updated_at timestamp with time zone not null,
+	deleted_at timestamp with time zone
+) WITHOUT OIDS;
+
+CREATE TABLE IF NOT EXISTS sso.account_tenant(
+	account_id char(28) not null,
+	tenant_id char(28) not null,
 	created_at timestamp with time zone not null,
 	updated_at timestamp with time zone not null,
 	deleted_at timestamp with time zone
@@ -64,11 +80,18 @@ CREATE TABLE IF NOT EXISTS sso.token(
 	deleted_at timestamp with time zone
 ) WITHOUT OIDS;
 
+ALTER TABLE sso.tenant ADD CONSTRAINT pk_sso_tenant PRIMARY KEY(id);
+ALTER TABLE sso.tenant ADD CONSTRAINT unq_sso_tenant_id UNIQUE (id);
+
 ALTER TABLE sso.account ADD CONSTRAINT pk_sso_account PRIMARY KEY(id);
 ALTER TABLE sso.account ADD CONSTRAINT unq_sso_account_id UNIQUE (id);
 
 ALTER TABLE sso.account_identifier ADD CONSTRAINT unq_sso_account_identifier_identifier UNIQUE (identifier);
 ALTER TABLE sso.account_identifier ADD CONSTRAINT fk_sso_account_identifier_account FOREIGN KEY (account_id) REFERENCES sso.account (id);
+
+ALTER TABLE sso.account_tenant ADD CONSTRAINT unq_sso_account_tenant UNIQUE (account_id, tenant_id);
+ALTER TABLE sso.account_tenant ADD CONSTRAINT fk_sso_account_tenant_account_id FOREIGN KEY (account_id) REFERENCES sso.account (id);
+ALTER TABLE sso.account_tenant ADD CONSTRAINT fk_sso_account_tenant_tenant_id FOREIGN KEY (tenant_id) REFERENCES sso.tenant (id);
 
 ALTER TABLE sso.client ADD CONSTRAINT pk_sso_client PRIMARY KEY(id);
 ALTER TABLE sso.client ADD CONSTRAINT unq_sso_client_id UNIQUE (id);
@@ -92,3 +115,6 @@ ALTER TABLE sso.token ADD CONSTRAINT pk_sso_token PRIMARY KEY(id);
 ALTER TABLE sso.token ADD CONSTRAINT pk_sso_token_id UNIQUE (id);
 ALTER TABLE sso.token ADD CONSTRAINT fk_sso_token_account_id FOREIGN KEY (account_id) REFERENCES sso.account (id);
 ALTER TABLE sso.token ADD CONSTRAINT fk_sso_token_client_id FOREIGN KEY (client_id) REFERENCES sso.client (id);
+
+CREATE SEQUENCE IF NOT EXISTS sso.setup_admin AS smallint MAXVALUE 2;
+SELECT nextval('sso.setup_admin');

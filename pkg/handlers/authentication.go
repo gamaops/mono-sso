@@ -96,6 +96,7 @@ func AuthenticateHandler(httpServer *httpserver.HTTPServer, model *session.Authe
 		SourceIp:               clientIPs.SourceIP,
 		UserAgent:              r.Header.Get("User-Agent"),
 		ActivationCodeDuration: model.Options.MFASessionDuration.String(),
+		TenantId:               model.Options.TenantID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), httpServer.Options.RequestDeadline)

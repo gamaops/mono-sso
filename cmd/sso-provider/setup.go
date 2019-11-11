@@ -26,14 +26,18 @@ var ServiceOAuth2Jose *oauth2.OAuth2Jose
 var ServiceAuthenticationModel *session.AuthenticationModel
 var ServiceAuthorizationModel *session.AuthorizationModel
 var Router *mux.Router = mux.NewRouter()
+var TenantID string
 
 func setup() {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 
 	// Namespace is used to prefix cookies and other things to avoid collision between two instances of SSO provider
+	// When dealing with multi tenant applications, we recommend to change the namespace
 	viper.SetDefault("namespace", "SSO")
 	viper.BindEnv("namespace", "SSO_NAMESPACE")
+	viper.SetDefault("tenant", "pb6e3l41j17g2046a9bq5fek5qkq")
+	viper.BindEnv("tenant", "SSO_TENANT")
 
 	// Issuer to use as "iss" in JWTs
 	viper.SetDefault("issuer", "accounts.savesafe.app")
@@ -177,6 +181,7 @@ func setup() {
 			SessionCookieDomain:      viper.GetString("sessionCookieDomain"),
 			SessionCookiePath:        viper.GetString("sessionCookiePath"),
 			AccountServiceClient:     accountServiceClient,
+			TenantID:                 viper.GetString("tenant"),
 		},
 		Logger: log,
 	}
@@ -250,6 +255,7 @@ func setup() {
 		handlers.ExchangeHandler(
 			ServiceHTTPServer,
 			ServiceAuthorizationModel,
+			ServiceAuthenticationModel,
 			ServiceOAuth2Jose,
 			ServiceCache,
 			w,
@@ -260,6 +266,7 @@ func setup() {
 		handlers.RefreshTokenHandler(
 			ServiceHTTPServer,
 			ServiceAuthorizationModel,
+			ServiceAuthenticationModel,
 			ServiceOAuth2Jose,
 			w,
 			r,

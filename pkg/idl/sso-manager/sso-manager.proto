@@ -5,6 +5,7 @@ option go_package = "github.com/gamaops/mono-sso/pkg/idl/sso-manager";
 package sso.manager;
 
 import "sso-common/sso-common.proto";
+import "sso-service/sso-service.proto";
 
 enum ClientType {
 	PUBLIC = 0;
@@ -60,4 +61,57 @@ service ClientService {
 	rpc DeleteClient(DeleteClientRequest) returns (DeleteClientResponse);
 	rpc UpsertScope(UpsertScopeRequest) returns (UpsertScopeResponse);
 	rpc DeleteScope(DeleteScopeRequest) returns (DeleteClientResponse);
+}
+
+message UpsertTenantRequest {
+	sso.common.RequestSession session = 1;
+	string tenant_id = 2;
+	string name = 3;
+}
+
+message UpsertTenantResponse {
+	sso.common.ResponseStatus status = 1;
+	string tenant_id = 2;
+}
+
+message DeleteTenantRequest {
+	sso.common.RequestSession session = 1;
+	string tenant_id = 2;
+}
+
+message DeleteTenantResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+service ManagementService {
+	rpc UpsertTenant(UpsertTenantRequest) returns (UpsertTenantResponse);
+	rpc DeleteTenant(DeleteTenantRequest) returns (DeleteTenantResponse);
+}
+
+message UpsertAccountRequest {
+	sso.common.RequestSession session = 1;
+	string account_id = 2;
+	sso.service.ActivationMethod activation_method = 3;
+	string password = 4;
+	string name = 5;
+	repeated string identifiers = 6;
+	repeated string tenant_ids = 7;
+}
+
+message UpsertAccountResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+message DeleteAccountRequest {
+	sso.common.RequestSession session = 1;
+	string account_id = 2;
+}
+
+message DeleteAccountResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+service AccountService {
+	rpc UpsertAccount(UpsertAccountRequest) returns (UpsertAccountResponse);
+	rpc DeleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
 }

@@ -123,5 +123,12 @@ migrate -database ${SSO_POSTGRES_URI} -path deployments/db/migrations down
 
 - [ ] Improve SSO Service cache
 - [ ] Allow refresh token endpoint to receive new scopes request
-- [ ] Improve event generation for auditing
+- [ ] Improve event generation for auditing (logging)
 - [ ] Add request tracing
+- [ ] Add Prometheus metrics
+- [ ] ~~Add passwordless sign-in~~ (this authentication method is really insecure 'cause we relay only on the auth's second factor)
+- [ ] Add fallback 404 on SSO Provider
+- [ ] Add password recovery (with option to sign out from all devices)
+- [x] Add cache purge (Account/Session/Client)
+- [ ] Add Kafka event sourcing
+- [ ] Add restricted scopes (scopes that must be authorized grant by an account that already have the scope)

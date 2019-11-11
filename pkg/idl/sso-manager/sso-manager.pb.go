@@ -7,6 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	sso_common "github.com/gamaops/mono-sso/pkg/idl/sso-common"
+	sso_service "github.com/gamaops/mono-sso/pkg/idl/sso-service"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -458,6 +459,406 @@ func (m *DeleteScopeResponse) GetStatus() *sso_common.ResponseStatus {
 	return nil
 }
 
+type UpsertTenantRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	TenantId             string                     `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	Name                 string                     `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *UpsertTenantRequest) Reset()         { *m = UpsertTenantRequest{} }
+func (m *UpsertTenantRequest) String() string { return proto.CompactTextString(m) }
+func (*UpsertTenantRequest) ProtoMessage()    {}
+func (*UpsertTenantRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{8}
+}
+
+func (m *UpsertTenantRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertTenantRequest.Unmarshal(m, b)
+}
+func (m *UpsertTenantRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertTenantRequest.Marshal(b, m, deterministic)
+}
+func (m *UpsertTenantRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertTenantRequest.Merge(m, src)
+}
+func (m *UpsertTenantRequest) XXX_Size() int {
+	return xxx_messageInfo_UpsertTenantRequest.Size(m)
+}
+func (m *UpsertTenantRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertTenantRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertTenantRequest proto.InternalMessageInfo
+
+func (m *UpsertTenantRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *UpsertTenantRequest) GetTenantId() string {
+	if m != nil {
+		return m.TenantId
+	}
+	return ""
+}
+
+func (m *UpsertTenantRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type UpsertTenantResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	TenantId             string                     `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *UpsertTenantResponse) Reset()         { *m = UpsertTenantResponse{} }
+func (m *UpsertTenantResponse) String() string { return proto.CompactTextString(m) }
+func (*UpsertTenantResponse) ProtoMessage()    {}
+func (*UpsertTenantResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{9}
+}
+
+func (m *UpsertTenantResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertTenantResponse.Unmarshal(m, b)
+}
+func (m *UpsertTenantResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertTenantResponse.Marshal(b, m, deterministic)
+}
+func (m *UpsertTenantResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertTenantResponse.Merge(m, src)
+}
+func (m *UpsertTenantResponse) XXX_Size() int {
+	return xxx_messageInfo_UpsertTenantResponse.Size(m)
+}
+func (m *UpsertTenantResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertTenantResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertTenantResponse proto.InternalMessageInfo
+
+func (m *UpsertTenantResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+func (m *UpsertTenantResponse) GetTenantId() string {
+	if m != nil {
+		return m.TenantId
+	}
+	return ""
+}
+
+type DeleteTenantRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	TenantId             string                     `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteTenantRequest) Reset()         { *m = DeleteTenantRequest{} }
+func (m *DeleteTenantRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteTenantRequest) ProtoMessage()    {}
+func (*DeleteTenantRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{10}
+}
+
+func (m *DeleteTenantRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteTenantRequest.Unmarshal(m, b)
+}
+func (m *DeleteTenantRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteTenantRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteTenantRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteTenantRequest.Merge(m, src)
+}
+func (m *DeleteTenantRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteTenantRequest.Size(m)
+}
+func (m *DeleteTenantRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteTenantRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteTenantRequest proto.InternalMessageInfo
+
+func (m *DeleteTenantRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *DeleteTenantRequest) GetTenantId() string {
+	if m != nil {
+		return m.TenantId
+	}
+	return ""
+}
+
+type DeleteTenantResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteTenantResponse) Reset()         { *m = DeleteTenantResponse{} }
+func (m *DeleteTenantResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteTenantResponse) ProtoMessage()    {}
+func (*DeleteTenantResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{11}
+}
+
+func (m *DeleteTenantResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteTenantResponse.Unmarshal(m, b)
+}
+func (m *DeleteTenantResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteTenantResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteTenantResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteTenantResponse.Merge(m, src)
+}
+func (m *DeleteTenantResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteTenantResponse.Size(m)
+}
+func (m *DeleteTenantResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteTenantResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteTenantResponse proto.InternalMessageInfo
+
+func (m *DeleteTenantResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+type UpsertAccountRequest struct {
+	Session              *sso_common.RequestSession   `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	AccountId            string                       `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	ActivationMethod     sso_service.ActivationMethod `protobuf:"varint,3,opt,name=activation_method,json=activationMethod,proto3,enum=sso.service.ActivationMethod" json:"activation_method,omitempty"`
+	Password             string                       `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
+	Name                 string                       `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	Identifiers          []string                     `protobuf:"bytes,6,rep,name=identifiers,proto3" json:"identifiers,omitempty"`
+	TenantIds            []string                     `protobuf:"bytes,7,rep,name=tenant_ids,json=tenantIds,proto3" json:"tenant_ids,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                     `json:"-"`
+	XXX_unrecognized     []byte                       `json:"-"`
+	XXX_sizecache        int32                        `json:"-"`
+}
+
+func (m *UpsertAccountRequest) Reset()         { *m = UpsertAccountRequest{} }
+func (m *UpsertAccountRequest) String() string { return proto.CompactTextString(m) }
+func (*UpsertAccountRequest) ProtoMessage()    {}
+func (*UpsertAccountRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{12}
+}
+
+func (m *UpsertAccountRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertAccountRequest.Unmarshal(m, b)
+}
+func (m *UpsertAccountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertAccountRequest.Marshal(b, m, deterministic)
+}
+func (m *UpsertAccountRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertAccountRequest.Merge(m, src)
+}
+func (m *UpsertAccountRequest) XXX_Size() int {
+	return xxx_messageInfo_UpsertAccountRequest.Size(m)
+}
+func (m *UpsertAccountRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertAccountRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertAccountRequest proto.InternalMessageInfo
+
+func (m *UpsertAccountRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *UpsertAccountRequest) GetAccountId() string {
+	if m != nil {
+		return m.AccountId
+	}
+	return ""
+}
+
+func (m *UpsertAccountRequest) GetActivationMethod() sso_service.ActivationMethod {
+	if m != nil {
+		return m.ActivationMethod
+	}
+	return sso_service.ActivationMethod_NONE
+}
+
+func (m *UpsertAccountRequest) GetPassword() string {
+	if m != nil {
+		return m.Password
+	}
+	return ""
+}
+
+func (m *UpsertAccountRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *UpsertAccountRequest) GetIdentifiers() []string {
+	if m != nil {
+		return m.Identifiers
+	}
+	return nil
+}
+
+func (m *UpsertAccountRequest) GetTenantIds() []string {
+	if m != nil {
+		return m.TenantIds
+	}
+	return nil
+}
+
+type UpsertAccountResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *UpsertAccountResponse) Reset()         { *m = UpsertAccountResponse{} }
+func (m *UpsertAccountResponse) String() string { return proto.CompactTextString(m) }
+func (*UpsertAccountResponse) ProtoMessage()    {}
+func (*UpsertAccountResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{13}
+}
+
+func (m *UpsertAccountResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpsertAccountResponse.Unmarshal(m, b)
+}
+func (m *UpsertAccountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpsertAccountResponse.Marshal(b, m, deterministic)
+}
+func (m *UpsertAccountResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpsertAccountResponse.Merge(m, src)
+}
+func (m *UpsertAccountResponse) XXX_Size() int {
+	return xxx_messageInfo_UpsertAccountResponse.Size(m)
+}
+func (m *UpsertAccountResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpsertAccountResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpsertAccountResponse proto.InternalMessageInfo
+
+func (m *UpsertAccountResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
+type DeleteAccountRequest struct {
+	Session              *sso_common.RequestSession `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
+	AccountId            string                     `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteAccountRequest) Reset()         { *m = DeleteAccountRequest{} }
+func (m *DeleteAccountRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteAccountRequest) ProtoMessage()    {}
+func (*DeleteAccountRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{14}
+}
+
+func (m *DeleteAccountRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteAccountRequest.Unmarshal(m, b)
+}
+func (m *DeleteAccountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteAccountRequest.Marshal(b, m, deterministic)
+}
+func (m *DeleteAccountRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteAccountRequest.Merge(m, src)
+}
+func (m *DeleteAccountRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteAccountRequest.Size(m)
+}
+func (m *DeleteAccountRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteAccountRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteAccountRequest proto.InternalMessageInfo
+
+func (m *DeleteAccountRequest) GetSession() *sso_common.RequestSession {
+	if m != nil {
+		return m.Session
+	}
+	return nil
+}
+
+func (m *DeleteAccountRequest) GetAccountId() string {
+	if m != nil {
+		return m.AccountId
+	}
+	return ""
+}
+
+type DeleteAccountResponse struct {
+	Status               *sso_common.ResponseStatus `protobuf:"bytes,1,opt,name=status,proto3" json:"status,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                   `json:"-"`
+	XXX_unrecognized     []byte                     `json:"-"`
+	XXX_sizecache        int32                      `json:"-"`
+}
+
+func (m *DeleteAccountResponse) Reset()         { *m = DeleteAccountResponse{} }
+func (m *DeleteAccountResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteAccountResponse) ProtoMessage()    {}
+func (*DeleteAccountResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7c09c63b2fb56424, []int{15}
+}
+
+func (m *DeleteAccountResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteAccountResponse.Unmarshal(m, b)
+}
+func (m *DeleteAccountResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteAccountResponse.Marshal(b, m, deterministic)
+}
+func (m *DeleteAccountResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteAccountResponse.Merge(m, src)
+}
+func (m *DeleteAccountResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteAccountResponse.Size(m)
+}
+func (m *DeleteAccountResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteAccountResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DeleteAccountResponse proto.InternalMessageInfo
+
+func (m *DeleteAccountResponse) GetStatus() *sso_common.ResponseStatus {
+	if m != nil {
+		return m.Status
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("sso.manager.ClientType", ClientType_name, ClientType_value)
 	proto.RegisterType((*UpsertClientRequest)(nil), "sso.manager.UpsertClientRequest")
@@ -468,44 +869,68 @@ func init() {
 	proto.RegisterType((*UpsertScopeResponse)(nil), "sso.manager.UpsertScopeResponse")
 	proto.RegisterType((*DeleteScopeRequest)(nil), "sso.manager.DeleteScopeRequest")
 	proto.RegisterType((*DeleteScopeResponse)(nil), "sso.manager.DeleteScopeResponse")
+	proto.RegisterType((*UpsertTenantRequest)(nil), "sso.manager.UpsertTenantRequest")
+	proto.RegisterType((*UpsertTenantResponse)(nil), "sso.manager.UpsertTenantResponse")
+	proto.RegisterType((*DeleteTenantRequest)(nil), "sso.manager.DeleteTenantRequest")
+	proto.RegisterType((*DeleteTenantResponse)(nil), "sso.manager.DeleteTenantResponse")
+	proto.RegisterType((*UpsertAccountRequest)(nil), "sso.manager.UpsertAccountRequest")
+	proto.RegisterType((*UpsertAccountResponse)(nil), "sso.manager.UpsertAccountResponse")
+	proto.RegisterType((*DeleteAccountRequest)(nil), "sso.manager.DeleteAccountRequest")
+	proto.RegisterType((*DeleteAccountResponse)(nil), "sso.manager.DeleteAccountResponse")
 }
 
 func init() { proto.RegisterFile("sso-manager/sso-manager.proto", fileDescriptor_7c09c63b2fb56424) }
 
 var fileDescriptor_7c09c63b2fb56424 = []byte{
-	// 506 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x54, 0x51, 0x6e, 0xd3, 0x4c,
-	0x10, 0xfe, 0xdd, 0xa6, 0xf9, 0xc9, 0xd8, 0x41, 0xd1, 0x36, 0x12, 0x56, 0x2a, 0x84, 0x71, 0x5f,
-	0xa2, 0xa2, 0xda, 0x22, 0x70, 0x01, 0x9a, 0x82, 0x64, 0x54, 0x95, 0x62, 0x37, 0x2f, 0xbc, 0x54,
-	0xae, 0x3d, 0x4a, 0x57, 0xc4, 0x5e, 0xb3, 0xb3, 0x41, 0xea, 0x03, 0x37, 0xe0, 0x0e, 0xdc, 0x88,
-	0x23, 0x70, 0x16, 0x64, 0x7b, 0xa3, 0x3a, 0xc1, 0x54, 0xa8, 0xa8, 0xe2, 0x6d, 0x3d, 0xfb, 0x79,
-	0xbe, 0xf9, 0x66, 0xbe, 0x59, 0x78, 0x4c, 0x24, 0x0e, 0xb3, 0x38, 0x8f, 0xe7, 0x28, 0xfd, 0xc6,
-	0xd9, 0x2b, 0xa4, 0x50, 0x82, 0x99, 0x44, 0xc2, 0xd3, 0xa1, 0xd1, 0x5e, 0x79, 0x9f, 0x88, 0x2c,
-	0x13, 0xb9, 0x7f, 0x73, 0xac, 0x91, 0xee, 0x77, 0x03, 0x76, 0x67, 0x05, 0xa1, 0x54, 0xd3, 0x05,
-	0xc7, 0x5c, 0x85, 0xf8, 0x69, 0x89, 0xa4, 0xd8, 0x4b, 0xf8, 0x9f, 0x90, 0x88, 0x8b, 0xdc, 0x36,
-	0x1c, 0x63, 0x6c, 0x4e, 0x46, 0x5e, 0x99, 0x53, 0xff, 0xab, 0x51, 0x51, 0x8d, 0x08, 0x57, 0x50,
-	0xb6, 0x07, 0xbd, 0xa4, 0x4a, 0x73, 0xc1, 0x53, 0x7b, 0xcb, 0x31, 0xc6, 0xbd, 0xf0, 0x41, 0x1d,
-	0x08, 0x52, 0xf6, 0x0c, 0x3a, 0xea, 0xba, 0x40, 0x7b, 0xdb, 0x31, 0xc6, 0x0f, 0x27, 0x8f, 0xbc,
-	0x46, 0x8d, 0x5e, 0x4d, 0x7e, 0x7e, 0x5d, 0x60, 0x58, 0x81, 0xd8, 0x3e, 0xf4, 0x25, 0xa6, 0x5c,
-	0x62, 0xa2, 0x2e, 0x96, 0x92, 0x93, 0xdd, 0x71, 0xb6, 0xc7, 0xbd, 0xd0, 0x5a, 0x05, 0x67, 0x92,
-	0x13, 0x63, 0xd0, 0xc9, 0xe3, 0x0c, 0xed, 0x9d, 0x8a, 0xa9, 0x3a, 0xbb, 0x5f, 0x0d, 0x18, 0xae,
-	0x0b, 0xa2, 0x42, 0xe4, 0x84, 0x6c, 0x02, 0x5d, 0x52, 0xb1, 0x5a, 0x52, 0xbb, 0xa0, 0x1a, 0x15,
-	0x55, 0x88, 0x50, 0x23, 0x6f, 0xd7, 0xb3, 0x0f, 0x7d, 0x7d, 0x49, 0x98, 0x48, 0x54, 0x95, 0xb0,
-	0x5e, 0x68, 0xd5, 0xc1, 0xa8, 0x8a, 0xb9, 0x57, 0xb0, 0x7b, 0x8c, 0x0b, 0x54, 0x78, 0xdf, 0xed,
-	0x75, 0xdf, 0xc2, 0x70, 0x9d, 0xe9, 0xee, 0xba, 0xdd, 0x6f, 0x06, 0xb0, 0xba, 0x89, 0x51, 0x22,
-	0x0a, 0xbc, 0x47, 0x53, 0x0c, 0x61, 0x87, 0x4a, 0x0a, 0xdd, 0xbc, 0xfa, 0x83, 0x39, 0x60, 0xa6,
-	0x48, 0x89, 0xe4, 0x85, 0x2a, 0xc9, 0x3a, 0xd5, 0x5d, 0x33, 0xe4, 0x06, 0x2b, 0xdb, 0xea, 0x02,
-	0xff, 0x42, 0xec, 0x17, 0x60, 0x75, 0xe3, 0xfe, 0x89, 0xd6, 0x52, 0xc9, 0x1a, 0xfd, 0xdd, 0x95,
-	0x1c, 0x1c, 0x00, 0xdc, 0x2c, 0x12, 0x03, 0xe8, 0x9e, 0xcd, 0x8e, 0x4e, 0x82, 0xe9, 0xe0, 0x3f,
-	0x36, 0x00, 0x6b, 0xfa, 0xee, 0xf4, 0x4d, 0x70, 0xfc, 0xfa, 0xf4, 0x3c, 0x78, 0x75, 0x32, 0x30,
-	0x26, 0x3f, 0xb6, 0xa0, 0x3f, 0xd5, 0x4e, 0x95, 0x9f, 0x79, 0x82, 0x2c, 0x02, 0xab, 0xb9, 0x38,
-	0xcc, 0x59, 0xdb, 0xd0, 0x96, 0x47, 0x62, 0xf4, 0xf4, 0x16, 0x84, 0x96, 0x11, 0x81, 0xd5, 0x74,
-	0xe5, 0x46, 0xd2, 0x96, 0xd5, 0xd8, 0x48, 0xda, 0x6a, 0xe9, 0x33, 0x30, 0x1b, 0xc3, 0x67, 0x4f,
-	0x5a, 0xca, 0x68, 0xce, 0x72, 0xe4, 0xfc, 0x1e, 0xa0, 0x33, 0xbe, 0x07, 0xb3, 0x31, 0x84, 0x8d,
-	0x8c, 0xbf, 0xba, 0xe3, 0x0f, 0x8a, 0x3c, 0x7a, 0xfe, 0xc1, 0x9f, 0x73, 0x75, 0xb5, 0xbc, 0x2c,
-	0x87, 0xe6, 0xcf, 0xe3, 0x2c, 0x16, 0x05, 0xf9, 0x99, 0xc8, 0xc5, 0x21, 0x91, 0xf0, 0x8b, 0x8f,
-	0x73, 0x9f, 0xa7, 0x8b, 0xe6, 0xe3, 0x7d, 0xd9, 0xad, 0xde, 0xe4, 0x17, 0x3f, 0x03, 0x00, 0x00,
-	0xff, 0xff, 0x59, 0xf3, 0x3d, 0x3b, 0xde, 0x05, 0x00, 0x00,
+	// 758 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0x51, 0x4e, 0xdb, 0x4a,
+	0x14, 0x7d, 0x86, 0x10, 0xc8, 0x4d, 0x82, 0xc2, 0xc0, 0xd3, 0x8b, 0x8c, 0xd0, 0xf3, 0x33, 0x3f,
+	0x11, 0x4f, 0xc4, 0x6a, 0xda, 0x0d, 0x40, 0x68, 0x25, 0x53, 0xa0, 0xd4, 0x01, 0x3e, 0xfa, 0x83,
+	0x8c, 0x3d, 0x0d, 0x23, 0xb0, 0xc7, 0xf5, 0x4c, 0xa8, 0x90, 0xda, 0x1d, 0x74, 0x0f, 0xfd, 0xed,
+	0x26, 0x2a, 0x75, 0x05, 0x5d, 0x42, 0xd7, 0x52, 0x79, 0x3c, 0x4e, 0x6c, 0x77, 0x88, 0x2a, 0x52,
+	0xda, 0xbf, 0xc9, 0x9d, 0xa3, 0x7b, 0xef, 0x39, 0x99, 0x73, 0xaf, 0x61, 0x83, 0x31, 0xba, 0x1d,
+	0xb8, 0xa1, 0x3b, 0xc4, 0xb1, 0x95, 0x3b, 0x77, 0xa3, 0x98, 0x72, 0x8a, 0xea, 0x8c, 0xd1, 0xae,
+	0x0c, 0xe9, 0xeb, 0xc9, 0xbd, 0x47, 0x83, 0x80, 0x86, 0xd6, 0xe4, 0x98, 0x22, 0x75, 0x91, 0x88,
+	0xe1, 0xf8, 0x86, 0x78, 0xd8, 0xca, 0x9d, 0xd3, 0x6b, 0xf3, 0xab, 0x06, 0xab, 0xa7, 0x11, 0xc3,
+	0x31, 0xef, 0x5f, 0x13, 0x1c, 0x72, 0x07, 0xbf, 0x19, 0x61, 0xc6, 0xd1, 0x13, 0x58, 0x64, 0x98,
+	0x31, 0x42, 0xc3, 0xb6, 0x66, 0x68, 0x9d, 0x7a, 0x4f, 0xef, 0x26, 0x25, 0x65, 0x6a, 0x89, 0x1a,
+	0xa4, 0x08, 0x27, 0x83, 0xa2, 0x75, 0xa8, 0x79, 0x22, 0xcd, 0x39, 0xf1, 0xdb, 0x73, 0x86, 0xd6,
+	0xa9, 0x39, 0x4b, 0x69, 0xc0, 0xf6, 0xd1, 0xff, 0x50, 0xe1, 0xb7, 0x11, 0x6e, 0xcf, 0x1b, 0x5a,
+	0x67, 0xb9, 0xf7, 0x4f, 0x37, 0x47, 0xa1, 0x9b, 0x16, 0x3f, 0xb9, 0x8d, 0xb0, 0x23, 0x40, 0x68,
+	0x13, 0x9a, 0x31, 0xf6, 0x49, 0x8c, 0x3d, 0x7e, 0x3e, 0x8a, 0x09, 0x6b, 0x57, 0x8c, 0xf9, 0x4e,
+	0xcd, 0x69, 0x64, 0xc1, 0xd3, 0x98, 0x30, 0x84, 0xa0, 0x12, 0xba, 0x01, 0x6e, 0x2f, 0x88, 0x4a,
+	0xe2, 0x6c, 0x7e, 0xd0, 0x60, 0xad, 0x48, 0x88, 0x45, 0x34, 0x64, 0x18, 0xf5, 0xa0, 0xca, 0xb8,
+	0xcb, 0x47, 0x4c, 0x4d, 0x28, 0x45, 0x0d, 0x04, 0xc2, 0x91, 0xc8, 0xe9, 0x7c, 0x36, 0xa1, 0x29,
+	0x2f, 0x19, 0xf6, 0x62, 0xcc, 0x05, 0xb1, 0x9a, 0xd3, 0x48, 0x83, 0x03, 0x11, 0x33, 0x2f, 0x61,
+	0x75, 0x0f, 0x5f, 0x63, 0x8e, 0x1f, 0x5a, 0x5e, 0x73, 0x1f, 0xd6, 0x8a, 0x95, 0xee, 0xcf, 0xdb,
+	0xfc, 0xa8, 0x01, 0x4a, 0x45, 0x1c, 0x78, 0x34, 0xc2, 0x0f, 0xf8, 0x28, 0xd6, 0x60, 0x81, 0x25,
+	0x25, 0xa4, 0x78, 0xe9, 0x0f, 0x64, 0x40, 0xdd, 0xc7, 0xcc, 0x8b, 0x49, 0xc4, 0x93, 0x62, 0x15,
+	0x71, 0x97, 0x0f, 0x99, 0x76, 0xf6, 0x6c, 0x65, 0x83, 0x33, 0x90, 0x7d, 0x0f, 0x28, 0x15, 0xee,
+	0x8f, 0x70, 0x4d, 0x98, 0x14, 0xca, 0xcf, 0xc0, 0xe4, 0x5d, 0x26, 0xca, 0x09, 0x0e, 0xdd, 0x5f,
+	0xf0, 0xd8, 0xb8, 0x48, 0x93, 0xa3, 0x92, 0x06, 0x6c, 0x7f, 0xec, 0xbc, 0xf9, 0x9c, 0xf3, 0x86,
+	0x99, 0xf1, 0xb2, 0xea, 0xb3, 0x19, 0xef, 0xce, 0xe2, 0x13, 0x4f, 0x3d, 0x34, 0xcd, 0x89, 0xa7,
+	0x66, 0xa7, 0x64, 0x7e, 0x9a, 0xcb, 0xf4, 0xd9, 0xf1, 0x3c, 0x3a, 0x9a, 0xb5, 0xef, 0x0d, 0x00,
+	0x37, 0xcd, 0x33, 0x69, 0xbc, 0x26, 0x23, 0xb6, 0x8f, 0xf6, 0x61, 0xc5, 0xf5, 0x38, 0xb9, 0x71,
+	0x13, 0xb7, 0x9c, 0x07, 0x98, 0x5f, 0x52, 0x5f, 0x4e, 0xde, 0x0d, 0x91, 0x3e, 0x5b, 0x03, 0x3b,
+	0x63, 0xd4, 0xa1, 0x00, 0x39, 0x2d, 0xb7, 0x14, 0x41, 0x3a, 0x2c, 0x45, 0x2e, 0x63, 0x6f, 0x69,
+	0xec, 0x4b, 0x2b, 0x8e, 0x7f, 0xab, 0x46, 0x70, 0xe2, 0x5e, 0xe2, 0xe3, 0x90, 0x93, 0xd7, 0x04,
+	0xc7, 0xac, 0x5d, 0x15, 0x93, 0x3b, 0x1f, 0x4a, 0x9a, 0x1f, 0x8b, 0xce, 0xda, 0x8b, 0x02, 0x50,
+	0xcb, 0x54, 0x67, 0xe6, 0x73, 0xf8, 0xbb, 0xa4, 0xd4, 0x0c, 0xba, 0x5f, 0x65, 0xff, 0xe1, 0x6f,
+	0x90, 0x3d, 0xe9, 0xbc, 0x54, 0xec, 0xfe, 0x9d, 0x6f, 0x6d, 0x01, 0x4c, 0xf6, 0x22, 0x02, 0xa8,
+	0x1e, 0x9f, 0xee, 0x1e, 0xd8, 0xfd, 0xd6, 0x5f, 0xa8, 0x05, 0x8d, 0xfe, 0x8b, 0xa3, 0x67, 0xf6,
+	0xde, 0xd3, 0xa3, 0x13, 0x7b, 0xe7, 0xa0, 0xa5, 0xf5, 0xbe, 0xcd, 0x41, 0xb3, 0x2f, 0x17, 0x8f,
+	0xf8, 0x63, 0xd1, 0x00, 0x1a, 0xf9, 0x3d, 0x88, 0x8c, 0xc2, 0xc2, 0x55, 0xec, 0x7c, 0xfd, 0xbf,
+	0x29, 0x08, 0x49, 0x63, 0x00, 0x8d, 0xfc, 0x92, 0x29, 0x25, 0x55, 0x6c, 0xba, 0x52, 0x52, 0xe5,
+	0x86, 0x3a, 0x86, 0x7a, 0x6e, 0x96, 0xa3, 0x7f, 0x15, 0x6d, 0xe4, 0x47, 0xb3, 0x6e, 0xdc, 0x0d,
+	0x90, 0x19, 0x5f, 0x42, 0x3d, 0x37, 0x53, 0x4b, 0x19, 0x7f, 0x1c, 0xf6, 0x3f, 0xd1, 0x64, 0xef,
+	0xb3, 0x06, 0x2b, 0x87, 0x02, 0x10, 0xa8, 0x44, 0x4e, 0x07, 0x84, 0x52, 0xe4, 0xc2, 0x94, 0x52,
+	0x8a, 0x5c, 0x9a, 0x2e, 0x63, 0x91, 0x95, 0x49, 0x15, 0xa3, 0x4f, 0xd9, 0x7f, 0x31, 0x69, 0xef,
+	0x8b, 0x06, 0xcb, 0xf2, 0x51, 0x66, 0xcd, 0x9f, 0x41, 0xb3, 0x60, 0x33, 0xa4, 0xea, 0xad, 0xe8,
+	0x1a, 0xdd, 0x9c, 0x06, 0x91, 0xfd, 0x9f, 0x41, 0xb3, 0x60, 0x02, 0xa4, 0x6a, 0x6f, 0x6a, 0x5e,
+	0xa5, 0x87, 0x76, 0x1f, 0xbd, 0xb2, 0x86, 0x84, 0x5f, 0x8e, 0x2e, 0x12, 0xdf, 0x58, 0x43, 0x37,
+	0x70, 0x69, 0xc4, 0xac, 0x80, 0x86, 0x74, 0x9b, 0x31, 0x6a, 0x45, 0x57, 0x43, 0x8b, 0xf8, 0xd7,
+	0xf9, 0xaf, 0xe5, 0x8b, 0xaa, 0xf8, 0xca, 0x7d, 0xfc, 0x3d, 0x00, 0x00, 0xff, 0xff, 0x45, 0x1a,
+	0x1e, 0x22, 0x4f, 0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -690,6 +1115,222 @@ var _ClientService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteScope",
 			Handler:    _ClientService_DeleteScope_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "sso-manager/sso-manager.proto",
+}
+
+// ManagementServiceClient is the client API for ManagementService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type ManagementServiceClient interface {
+	UpsertTenant(ctx context.Context, in *UpsertTenantRequest, opts ...grpc.CallOption) (*UpsertTenantResponse, error)
+	DeleteTenant(ctx context.Context, in *DeleteTenantRequest, opts ...grpc.CallOption) (*DeleteTenantResponse, error)
+}
+
+type managementServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewManagementServiceClient(cc *grpc.ClientConn) ManagementServiceClient {
+	return &managementServiceClient{cc}
+}
+
+func (c *managementServiceClient) UpsertTenant(ctx context.Context, in *UpsertTenantRequest, opts ...grpc.CallOption) (*UpsertTenantResponse, error) {
+	out := new(UpsertTenantResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ManagementService/UpsertTenant", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *managementServiceClient) DeleteTenant(ctx context.Context, in *DeleteTenantRequest, opts ...grpc.CallOption) (*DeleteTenantResponse, error) {
+	out := new(DeleteTenantResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.ManagementService/DeleteTenant", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ManagementServiceServer is the server API for ManagementService service.
+type ManagementServiceServer interface {
+	UpsertTenant(context.Context, *UpsertTenantRequest) (*UpsertTenantResponse, error)
+	DeleteTenant(context.Context, *DeleteTenantRequest) (*DeleteTenantResponse, error)
+}
+
+// UnimplementedManagementServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedManagementServiceServer struct {
+}
+
+func (*UnimplementedManagementServiceServer) UpsertTenant(ctx context.Context, req *UpsertTenantRequest) (*UpsertTenantResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertTenant not implemented")
+}
+func (*UnimplementedManagementServiceServer) DeleteTenant(ctx context.Context, req *DeleteTenantRequest) (*DeleteTenantResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTenant not implemented")
+}
+
+func RegisterManagementServiceServer(s *grpc.Server, srv ManagementServiceServer) {
+	s.RegisterService(&_ManagementService_serviceDesc, srv)
+}
+
+func _ManagementService_UpsertTenant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertTenantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManagementServiceServer).UpsertTenant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.ManagementService/UpsertTenant",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManagementServiceServer).UpsertTenant(ctx, req.(*UpsertTenantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ManagementService_DeleteTenant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTenantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManagementServiceServer).DeleteTenant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.ManagementService/DeleteTenant",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManagementServiceServer).DeleteTenant(ctx, req.(*DeleteTenantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _ManagementService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "sso.manager.ManagementService",
+	HandlerType: (*ManagementServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpsertTenant",
+			Handler:    _ManagementService_UpsertTenant_Handler,
+		},
+		{
+			MethodName: "DeleteTenant",
+			Handler:    _ManagementService_DeleteTenant_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "sso-manager/sso-manager.proto",
+}
+
+// AccountServiceClient is the client API for AccountService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type AccountServiceClient interface {
+	UpsertAccount(ctx context.Context, in *UpsertAccountRequest, opts ...grpc.CallOption) (*UpsertAccountResponse, error)
+	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
+}
+
+type accountServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewAccountServiceClient(cc *grpc.ClientConn) AccountServiceClient {
+	return &accountServiceClient{cc}
+}
+
+func (c *accountServiceClient) UpsertAccount(ctx context.Context, in *UpsertAccountRequest, opts ...grpc.CallOption) (*UpsertAccountResponse, error) {
+	out := new(UpsertAccountResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.AccountService/UpsertAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountServiceClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error) {
+	out := new(DeleteAccountResponse)
+	err := c.cc.Invoke(ctx, "/sso.manager.AccountService/DeleteAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AccountServiceServer is the server API for AccountService service.
+type AccountServiceServer interface {
+	UpsertAccount(context.Context, *UpsertAccountRequest) (*UpsertAccountResponse, error)
+	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
+}
+
+// UnimplementedAccountServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedAccountServiceServer struct {
+}
+
+func (*UnimplementedAccountServiceServer) UpsertAccount(ctx context.Context, req *UpsertAccountRequest) (*UpsertAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertAccount not implemented")
+}
+func (*UnimplementedAccountServiceServer) DeleteAccount(ctx context.Context, req *DeleteAccountRequest) (*DeleteAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+}
+
+func RegisterAccountServiceServer(s *grpc.Server, srv AccountServiceServer) {
+	s.RegisterService(&_AccountService_serviceDesc, srv)
+}
+
+func _AccountService_UpsertAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpsertAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).UpsertAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.AccountService/UpsertAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).UpsertAccount(ctx, req.(*UpsertAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AccountService_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountServiceServer).DeleteAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sso.manager.AccountService/DeleteAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountServiceServer).DeleteAccount(ctx, req.(*DeleteAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _AccountService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "sso.manager.AccountService",
+	HandlerType: (*AccountServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UpsertAccount",
+			Handler:    _AccountService_UpsertAccount_Handler,
+		},
+		{
+			MethodName: "DeleteAccount",
+			Handler:    _AccountService_DeleteAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

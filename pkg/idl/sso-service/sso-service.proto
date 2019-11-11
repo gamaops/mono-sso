@@ -34,6 +34,7 @@ message SignInRequest {
 	repeated string forwarded_ips = 6;
 	string session_id = 7;
 	string activation_code_duration = 8;
+	string tenant_id = 9;
 }
 
 message SignInResponse {
@@ -70,10 +71,31 @@ message RegisterEventResponse {
 	sso.common.ResponseStatus status = 1;
 }
 
+message RevokeScopesRequest {
+	string subject = 1;
+	string client_id = 2;
+	repeated string scopes = 3;
+}
+
+message RevokeScopesResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
+message RevokeTokenRequest {
+	string subject = 1;
+	string client_id = 2;
+}
+
+message RevokeTokenResponse {
+	sso.common.ResponseStatus status = 1;
+}
+
 service AccountService {
 	rpc SignIn(SignInRequest) returns (SignInResponse);
 	rpc ActivateSession(ActivateSessionRequest) returns (ActivateSessionResponse);
 	rpc RegisterEvent(RegisterEventRequest) returns (RegisterEventResponse);
+	rpc RevokeScopes(RevokeScopesRequest) returns (RevokeScopesResponse);
+	rpc RevokeToken(RevokeTokenRequest) returns (RevokeTokenResponse);
 }
 
 message AuthorizeClientRequest {
@@ -83,6 +105,7 @@ message AuthorizeClientRequest {
 	string redirect_uri = 4;
 	repeated string scopes = 5;
 	string state = 6;
+	string tenant_id = 7;
 }
 
 message AuthorizeClientResponse {
@@ -95,6 +118,7 @@ message GrantScopesRequest {
 	string client_id = 1;
 	string subject = 2;
 	repeated string scopes = 3;
+	string tenant_id = 4;
 }
 
 message GrantScopesResponse {
@@ -124,4 +148,28 @@ service AuthorizationService {
 	rpc GrantScopes(GrantScopesRequest) returns (GrantScopesResponse);
 	rpc NewRefreshToken(NewRefreshTokenRequest) returns (NewRefreshTokenResponse);
 	// TODO: Method to use refresh token
+}
+
+message PurgeClientCacheRequest {
+	string client_id = 1;
+}
+
+message PurgeClientCacheResponse {
+	sso.common.ResponseStatus status = 1;
+	int32 deleted_count = 2;
+}
+
+message PurgeAccountCacheRequest {
+	string subject = 1;
+	string session_id = 2;
+}
+
+message PurgeAccountCacheResponse {
+	sso.common.ResponseStatus status = 1;
+	int32 deleted_count = 2;
+}
+
+service SessionService {
+	rpc PurgeClientCache(PurgeClientCacheRequest) returns (PurgeClientCacheResponse);
+	rpc PurgeAccountCache(PurgeAccountCacheRequest) returns (PurgeAccountCacheResponse);
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/gamaops/mono-sso/pkg/cache"
 	"github.com/gamaops/mono-sso/pkg/datastore"
+	"github.com/gamaops/mono-sso/pkg/oauth2"
 	"github.com/go-redis/redis"
 	logrus "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -19,22 +20,46 @@ import (
 )
 
 var log = logrus.New()
+var enableSessionValidation bool
 var ServiceCache *cache.Cache
 var ServiceDatastore *datastore.Datastore
+var ServiceOAuth2Jose *oauth2.OAuth2Jose
 
 func setup() {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 
-	// MongoDB information
-	viper.SetDefault("mongodbUri", "")
-	viper.BindEnv("mongodbUri", "SSO_MONGODB_URI")
-	viper.SetDefault("mongodbConnectTimeout", "15s")
-	viper.BindEnv("mongodbConnectTimeout", "SSO_MONGODB_CONNECT_TIMEOUT")
-	viper.SetDefault("mongodbDatabase", "sso")
-	viper.BindEnv("mongodbDatabase", "SSO_MONGODB_DATABASE")
-	viper.SetDefault("mongodbShutdownTimeout", "5s")
-	viper.BindEnv("mongodbShutdownTimeout", "SSO_MONGODB_SHUTDOWN_TIMEOUT")
+	// Postgres information
+	viper.SetDefault("postgresUri", "")
+	viper.BindEnv("postgresUri", "SSO_POSTGRES_URI")
+	viper.SetDefault("postgresMaxConn", "5")
+	viper.BindEnv("postgresMaxConn", "SSO_POSTGRES_MAX_CONN")
+
+	// SSO Manager app setup information
+	viper.SetDefault("clientAppName", "SSO Manager")
+	viper.BindEnv("clienAppName", "SSO_CLIENT_APP_NAME")
+	viper.SetDefault("clientAppRedirectUris", "https://localhost:3230/sign-in")
+	viper.BindEnv("clientAppRedirectUris", "SSO_CLIENT_APP_REDIRECT_URIS")
+	viper.SetDefault("adminAccountName", "SSO Administrator")
+	viper.BindEnv("adminAccountName", "SSO_ADMIN_ACCOUNT_NAME")
+	viper.SetDefault("adminAccountIdentifier", "sso_admin")
+	viper.BindEnv("adminAccountIdentifier", "SSO_ADMIN_ACCOUNT_IDENTIFIER")
+	viper.SetDefault("adminAccountPassword", "sso#mono@6014")
+	viper.BindEnv("adminAccountPassword", "SSO_ADMIN_ACCOUNT_PASSWORD")
+	viper.SetDefault("adminTenant", "appk20hhh83hag8fbk1rad7o5qkq")
+	viper.BindEnv("adminTenant", "SSO_ADMIN_TENANT")
+	viper.SetDefault("setupTimeout", "10s")
+	viper.BindEnv("setupTimeout", "SSO_SETUP_TIMEOUT")
+
+	// SSO Manager session
+	viper.SetDefault("enableSessionValidation", "true")
+	viper.BindEnv("enableSessionValidation", "SSO_ENABLE_SESSION_VALIDATION")
+	viper.SetDefault("sessionAudience", "")
+	viper.BindEnv("sessionAudience", "SSO_SESSION_AUDIENCE")
+	viper.SetDefault("sessionPastToleration", "-15s")
+	viper.BindEnv("sessionPastToleration", "SSO_SESSION_PAST_TOLERATION")
+	viper.SetDefault("jwksUrl", "https://localhost:3230/.well-known/jwks.json")
+	viper.BindEnv("jwksUrl", "SSO_JWKS_URL")
 
 	// gRPC Server information
 	viper.SetDefault("grpcListen", "0.0.0.0:3232")
@@ -63,6 +88,21 @@ func setup() {
 		log.SetFormatter(&logrus.JSONFormatter{})
 	}
 
+	enableSessionValidation = viper.GetBool("enableSessionValidation")
+
+	if enableSessionValidation {
+		ServiceOAuth2Jose = &oauth2.OAuth2Jose{
+			Options: &oauth2.Options{
+				JWKSURL: viper.GetString("jwksUrl"),
+			},
+		}
+		err := oauth2.LoadOAuth2JoseFromURL(ServiceOAuth2Jose)
+		if err != nil {
+			log.Fatalf("Error when loading JWK from URL: %v", err)
+		}
+		setupClientServer()
+	}
+
 	log.SetOutput(os.Stdout)
 
 	ServiceCache = &cache.Cache{
@@ -87,9 +127,9 @@ func setup() {
 
 	ServiceDatastore = &datastore.Datastore{
 		Options: &datastore.Options{
-			MongoDBURI:    viper.GetString("mongodbUri"),
-			MongoDatabase: viper.GetString("mongodbDatabase"),
-			Validator:     validator.New(),
+			PostgresURI:    viper.GetString("postgresUri"),
+			MaxConnections: viper.GetInt("postgresMaxConn"),
+			Validator:      validator.New(),
 		},
 		Logger: log,
 	}
@@ -102,8 +142,9 @@ func setup() {
 		return name
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration("mongodbConnectTimeout"))
+	ctx, cancel := context.WithTimeout(context.Background(), viper.GetDuration("setupTimeout"))
 	defer cancel()
+
 	err := datastore.StartDatastore(ctx, ServiceDatastore)
 
 	if err != nil {
@@ -111,6 +152,11 @@ func setup() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
+
+	err = registerSSOManagerApp(ctx)
+	if err != nil {
+		log.Fatalf("Error setting up administration assets: %v", err)
+	}
 
 	log.SetLevel(logrus.DebugLevel)
 

@@ -23,12 +23,14 @@ func startGrpcServer() {
 
 	accountSrv := &AccountServer{}
 	authorizationSrv := &AuthorizationServer{}
+	sessionSrv := &SessionServer{}
 	gRPCServer = grpc.NewServer(
 		grpc.KeepaliveParams(keepalive.ServerParameters{MaxConnectionAge: viper.GetDuration("grpcMaxKeepAlive")}),
 	)
 
 	sso.RegisterAccountServiceServer(gRPCServer, accountSrv)
 	sso.RegisterAuthorizationServiceServer(gRPCServer, authorizationSrv)
+	sso.RegisterSessionServiceServer(gRPCServer, sessionSrv)
 	gRPCServer.Serve(lis)
 
 }

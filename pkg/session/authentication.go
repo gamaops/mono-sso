@@ -22,6 +22,7 @@ type AuthenticationOptions struct {
 	SessionCookieDomain      string
 	SessionCookiePath        string
 	AccountServiceClient     sso.AccountServiceClient
+	TenantID                 string
 }
 
 type AuthenticationModel struct {

@@ -27,7 +27,7 @@ func setup() {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 
-	// MongoDB information
+	// Postgres information
 	viper.SetDefault("postgresUri", "")
 	viper.BindEnv("postgresUri", "SSO_POSTGRES_URI")
 	viper.SetDefault("postgresMaxConn", "5")

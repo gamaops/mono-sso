@@ -21,6 +21,7 @@ import (
 func ExchangeHandler(
 	httpServer *httpserver.HTTPServer,
 	authzModel *session.AuthorizationModel,
+	authnModel *session.AuthenticationModel,
 	oauth2jose *oauth2.OAuth2Jose,
 	chc *cache.Cache,
 	w http.ResponseWriter,
@@ -36,7 +37,7 @@ func ExchangeHandler(
 		return
 	}
 
-	authCodeID, err := chc.CreateID(":authc:", dataForm.ClientID, ':', dataForm.Code)
+	authCodeID, err := chc.CreateID(":authc:", authnModel.Options.TenantID, ':', dataForm.ClientID, ':', dataForm.Code)
 	if err != nil {
 		httpServer.Logger.Errorf("Error when generating authorization code cache ID: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -120,7 +121,8 @@ func ExchangeHandler(
 			Expiry:    jwt.NewNumericDate(time.Unix(refreshTokenRes.ExpiresAt, 0)),
 			IssuedAt:  nowNumericDate,
 		},
-		Scope: strings.Join(refreshTokenReq.Scopes, " "),
+		Scope:  strings.Join(refreshTokenReq.Scopes, " "),
+		Tenant: authnModel.Options.TenantID,
 	}
 
 	res := &session.ExchangeResponse{
@@ -165,6 +167,7 @@ func ExchangeHandler(
 func RefreshTokenHandler(
 	httpServer *httpserver.HTTPServer,
 	authzModel *session.AuthorizationModel,
+	authnModel *session.AuthenticationModel,
 	oauth2jose *oauth2.OAuth2Jose,
 	w http.ResponseWriter,
 	r *http.Request,
@@ -181,7 +184,7 @@ func RefreshTokenHandler(
 
 	claims, err := oauth2.DecodeJWT(oauth2jose, dataForm.RefreshToken)
 
-	if err != nil || !claims.Claims.Audience.Contains(dataForm.ClientID) || claims.Claims.Issuer != authzModel.Options.Issuer {
+	if err != nil || !claims.Claims.Audience.Contains(dataForm.ClientID) || claims.Claims.Issuer != authzModel.Options.Issuer || claims.Tenant != authnModel.Options.TenantID {
 		httpServer.Logger.Warnf("Invalid refresh token to generate access token: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write(constants.InvalidRefreshResponse)

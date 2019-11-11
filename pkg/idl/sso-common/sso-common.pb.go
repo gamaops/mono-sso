@@ -107,8 +107,9 @@ func (m *ResponseStatus_Error) GetMessage() string {
 }
 
 type RequestSession struct {
-	AccessToken          string   `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	Locale               string   `protobuf:"bytes,2,opt,name=locale,proto3" json:"locale,omitempty"`
+	AccessToken string `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	Locale      string `protobuf:"bytes,2,opt,name=locale,proto3" json:"locale,omitempty"`
+	// Validate if it's not in the future
 	Timestamp            int64    `protobuf:"varint,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`

@@ -85,3 +85,12 @@ var UnauthorizedScopesStatus = &sso.ResponseStatus{
 		},
 	},
 }
+
+var InvalidTenantStatus = &sso.ResponseStatus{
+	Errors: []*sso.ResponseStatus_Error{
+		&sso.ResponseStatus_Error{
+			Slug:    constants.InvalidTenantSlg,
+			Message: constants.InvalidTenantMsg,
+		},
+	},
+}

@@ -24,9 +24,16 @@ func ParseErrorIntoStatus(err error, status *sso.ResponseStatus) *sso.ResponseSt
 			})
 		}
 		break
+
 	case error:
+		slug := constants.InternalErrorSlg
+		if err == ErrClientNotFound || err == ErrScopeNotFound || err == ErrTenantNotFound {
+			slug = constants.NotFoundSlg
+		} else if err == ErrVersionMismatch {
+			slug = constants.VersionMismatchSlg
+		}
 		status.Errors = append(status.Errors, &sso.ResponseStatus_Error{
-			Slug:    constants.InternalErrorSlg,
+			Slug:    slug,
 			Message: terr.Error(),
 		})
 	}

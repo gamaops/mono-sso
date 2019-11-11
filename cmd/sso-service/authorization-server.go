@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -16,6 +17,8 @@ import (
 	sso "github.com/gamaops/mono-sso/pkg/idl/sso-service"
 )
 
+var secretDecoder = base64.StdEncoding.WithPadding(base64.NoPadding)
+
 type AuthorizationServer struct {
 	sso.UnimplementedAuthorizationServiceServer
 }
@@ -23,6 +26,16 @@ type AuthorizationServer struct {
 func (s *AuthorizationServer) AuthorizeClient(ctx context.Context, req *sso.AuthorizeClientRequest) (*sso.AuthorizeClientResponse, error) {
 
 	res := &sso.AuthorizeClientResponse{}
+
+	isInTenant, err := ServiceDatastore.IsAccountInTenant(ctx, req.Subject, req.TenantId)
+	if err != nil {
+		res.Status = InternalErrorStatus
+		return res, nil
+	} else if !isInTenant {
+		log.Warnf("Grant request with invalid tenant %v for subject %v", req.TenantId, req.Subject)
+		res.Status = InvalidTenantStatus
+		return res, nil
+	}
 
 	if len(req.Scopes) > 0 {
 		hasUkn, err := hasUnknownScopes(ctx, req.ClientId, req.Scopes)
@@ -80,6 +93,16 @@ func (s *AuthorizationServer) GrantScopes(ctx context.Context, req *sso.GrantSco
 
 	if len(req.Scopes) == 0 {
 		res.Status = InvalidGrantStatus
+		return res, nil
+	}
+
+	isInTenant, err := ServiceDatastore.IsAccountInTenant(ctx, req.Subject, req.TenantId)
+	if err != nil {
+		res.Status = InternalErrorStatus
+		return res, nil
+	} else if !isInTenant {
+		log.Warnf("Grant request with invalid tenant %v for subject %v", req.TenantId, req.Subject)
+		res.Status = InvalidTenantStatus
 		return res, nil
 	}
 
@@ -185,7 +208,23 @@ func (s *AuthorizationServer) NewRefreshToken(ctx context.Context, req *sso.NewR
 		return res, nil
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(clientSecret), []byte(req.ClientSecret))
+	reqSecretBytes := []byte(req.ClientSecret)
+	clientSecretRaw := make([]byte, secretDecoder.DecodedLen(len(reqSecretBytes)))
+	decodeLen, err := secretDecoder.Decode(clientSecretRaw, reqSecretBytes)
+	if err != nil {
+		switch terr := err.(type) {
+		case base64.CorruptInputError:
+			log.Warnf("Invalid client secret to generate refresh token: %v", terr)
+			res.Status = InvalidClientStatus
+			return res, nil
+		default:
+			log.Warnf("Error when decoding client secret: %v", err)
+			res.Status = InvalidClientStatus
+			return res, nil
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(clientSecret), clientSecretRaw[:decodeLen])
 
 	if err != nil {
 		log.Warnf("Invalid client secret to generate refresh token: %v", err)
